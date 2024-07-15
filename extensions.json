@@ -171,9 +171,9 @@
             "rocket_mode_compatible": "False",
             "name": "Première",
             "description": "Plugins da Première Engenharia",
-            "author": "Fellipe Caetano",
+            "author": "BIM Coder",
             "author_profile": "https://bimcoder.net/",
-            "url": "https://github.com/BIMC0DER/Premiere.git",
+            "url": "https://github.com/premiere-engenharia/Plugins.git",
             "website": "https://www.youtube.com/@_bimcoder",
             "image": "",
             "dependencies": []
