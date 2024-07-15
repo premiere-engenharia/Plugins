@@ -1,0 +1,7 @@
+title:
+  Criar detalhes
+tooltip:
+  Cria detalhes 2D (planta de piso) e 3D a partir de regiões selecionadas (Itens de detalhe). 
+  Poderá criar vários detalhes desde que o parâmetro p.NÚMERO.DETALHE esteja criado e preenchido.
+author: 
+  Fellipe Caetano (BIM Coder)

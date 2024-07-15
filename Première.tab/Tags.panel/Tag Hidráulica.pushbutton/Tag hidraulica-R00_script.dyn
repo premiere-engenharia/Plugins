@@ -1,0 +1,863 @@
+{
+  "Uuid": "80c54381-5e39-44e3-924d-40b52d748682",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Fluxo hidraulico - Iron Python - 6",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "List": {
+        "Key": "List",
+        "Value": "BuiltIn.ds"
+      },
+      "String": {
+        "Key": "DSCore.String",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Line": {
+        "Key": "Autodesk.DesignScript.Geometry.Line",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [
+    {
+      "Id": "7e7be6c764de49de99e86f19b83efe0e",
+      "Name": "Inserir Tags",
+      "Type": "unknown",
+      "InitialValue": "",
+      "Description": "Executa um script Python incorporado."
+    }
+  ],
+  "Nodes": [
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "5efbac0f7de84e6da68eee4ecd079e29",
+      "Inputs": [
+        {
+          "Id": "6ab14d874da847c1829fb34ac3eddd32",
+          "Name": "",
+          "Description": "Nó do qual a saída é exibida",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2104fedeca914be6a183c02925b68294",
+          "Name": "",
+          "Description": "Saída do nó",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualizar a saída do nó"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *  \r\nfrom Autodesk.Revit.UI import *\r\nfrom Autodesk.Revit.UI.Selection import *\r\n  \r\nimport math     \r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nuidoc = uiapp.ActiveUIDocument\r\n\r\ntag_position = IN[0][0]\r\nmin_length = IN[0][1]\r\nselected_element = UnwrapElement(IN[0][2])\r\ndoclnk = IN[0][3]\r\nlnkinst = IN[0][4]\r\ntransform = IN[0][5]\r\nids_selecionados = IN[0][7]\r\n\r\n# Função para mostrar um TaskDialog\r\ndef show_task_dialog(title, message):\r\n    TaskDialog.Show(title, message)\r\n\r\nmain_pipe = selected_element\r\n\r\nview = doc.ActiveView  \r\n \r\ndebug_info = []  # Lista para armazenar mensagens de depuração \r\n\r\ndef get_connector_manager(element):\r\n    if hasattr(element, 'ConnectorManager') and element.ConnectorManager is not None:\r\n        debug_info.append(\"ConnectorManager encontrado diretamente no elemento {}\".format(element.Id))\r\n        return element.ConnectorManager\r\n    elif hasattr(element, 'MEPModel') and element.MEPModel and hasattr(element.MEPModel, 'ConnectorManager'):\r\n        debug_info.append(\"ConnectorManager encontrado via MEPModel no elemento {}\".format(element.Id))\r\n        return element.MEPModel.ConnectorManager\r\n    debug_info.append(\"Nenhum ConnectorManager disponível para o elemento {}\".format(element.Id))\r\n    return None\r\n\r\ndef filter_elements(element, ids_selecionados):\r\n\tif element.Id.IntegerValue in ids_selecionados:\r\n\t\tdebug_info.append(\"Elemento {} está dentro da região selecionada\".format(element.Id))\r\n\t\treturn True\r\n\telse:\r\n\t\tdebug_info.append(\"Elemento {} não está dentro da região selecionada\".format(element.Id))\r\n\t\treturn False\r\n\r\ndef follow_branch(element, branch, visited, branches, transform):\r\n    if element.Id in visited:\r\n        debug_info.append(\"Elemento {} já visitado, ignorando...\".format(element.Id))\r\n        return\r\n    if not filter_elements(element, ids_selecionados):\r\n        debug_info.append(\"Elemento {} não está na categoria correta ou não está visível na vista, ignorando...\".format(element.Id))\r\n        return\r\n    visited.add(element.Id)\r\n    debug_info.append(\"Visitando elemento {}, ramo atual: {}\".format(element.Id, branch))\r\n    branch.append(element)\r\n\r\n    connector_manager = get_connector_manager(element)\r\n    if connector_manager:\r\n        connected_elements = []\r\n        for connector in connector_manager.Connectors:\r\n            if connector.AllRefs:\r\n                for ref in connector.AllRefs:\r\n                    connected_element = doclnk.GetElement(ref.Owner.Id)\r\n                    if connected_element and connected_element.Id != element.Id and connected_element.Id not in visited and filter_elements(connected_element, ids_selecionados):\r\n                        connected_elements.append(connected_element)\r\n\r\n        if len(connected_elements) > 1: \r\n            branches.append(list(branch))\r\n            for connected in connected_elements:\r\n                follow_branch(connected, [], visited, branches, transform)\r\n        elif connected_elements: \r\n            follow_branch(connected_elements[0], branch, visited, branches, transform)\r\n        else:\r\n            branches.append(branch)\r\n    else: \r\n        branches.append(branch)\r\n        \r\ndef get_system_type(element):\r\n    connector_manager = get_connector_manager(element)\r\n    if connector_manager:\r\n        for connector in connector_manager.Connectors:\r\n            if connector.MEPSystem:\r\n                return connector.MEPSystem.GetTypeId()\r\n    return None\r\n\r\ndef remove_incorrect_system_type(branches):\r\n    result=[]\r\n    system_type = get_system_type(branches[0][0])\r\n    for list in branches:\r\n        firstItem = list[0]\r\n        if get_system_type(firstItem)==system_type:\r\n            result.append(list)\r\n    \r\n    return result\r\n\r\nbranches = []   \r\n \r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfollow_branch(main_pipe, [], set(), branches, transform)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = remove_incorrect_system_type(branches), lnkinst, debug_info",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "add3398faca343f7b6cb6e6a24a3a7d4",
+      "Inputs": [
+        {
+          "Id": "f644a3ebb4114a95ab28db94edd45371",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "388f2315bb83472e80d1fc96248ac5ae",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "0d488c7bb6e1461489486795b66902f2",
+      "Inputs": [
+        {
+          "Id": "324432003a2543fca0a96530bcf31f96",
+          "Name": "list",
+          "Description": "Lista da qual obter o primeiro item.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "deda2737e47c41a1934acd5d5337d8c5",
+          "Name": "item",
+          "Description": "O primeiro item na lista.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retorna o primeiro item em uma lista.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "019c4466b4d741e89b0f5811d40c9f69",
+      "Inputs": [
+        {
+          "Id": "d97d14ae005f4189abdbb1f5879606cc",
+          "Name": "list",
+          "Description": "Lista da qual obter o primeiro item.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1dc43b2cc5e7437c90d3189c2fddf430",
+          "Name": "item",
+          "Description": "O primeiro item na lista.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retorna o primeiro item em uma lista.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\nimport math\r\n\r\n# Função para mostrar um TaskDialog\r\ndef show_task_dialog(title, message):\r\n    TaskDialog.Show(title, message)\r\n\r\ndef getTagTypeName(direction, tagPosition):\r\n    if direction in [\"Seta para Baixo\", \"Seta para Esquerda\"]:\r\n        if tagPosition == \"Tag abaixo\":\r\n            return \"Ø ↓ + ( ← ↓ )\"\r\n        else:\r\n            return \"Ø ↑ + ( ← ↓ )\"           \r\n   \r\n    elif direction in [\"Seta para Cima\", \"Seta para Direita\"]:\r\n        if tagPosition == \"Tag abaixo\":  \r\n            return \"Ø ↓ + ( → ↑ )\"\r\n        else:\r\n            return \"Ø ↑ + ( → ↑ )\"\r\n            \r\n    elif direction == \"Sem direção definida\":\r\n        return \"Ø\"\r\n   \r\n    else:\r\n        raise ValueError(\"Direção inválida fornecida: {}\".format(direction))\r\n\r\ndef TagLinkedPipe(doc, linkedPipe, linkInstance, tagTypeName, tolerance):\r\n\r\n    # Obter a localização do tubo\r\n    location = linkedPipe.Location\r\n    \r\n    # Obter a curva do tubo\r\n    curve = location.Curve \r\n    \r\n    # Obter o comprimento do tubo\r\n    pipeLength = linkedPipe.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsDouble()\r\n    pipeLength = UnitUtils.ConvertFromInternalUnits(pipeLength,UnitTypeId.Centimeters)\r\n\r\n    # Calcular o ponto médio da curva do tubo\r\n    midPoint = curve.Evaluate(0.5, True)\r\n    \r\n    # Aplicar a transformação ao ponto médio \r\n    transform = linkInstance.GetTransform()  \r\n    transformedMidPoint = transform.OfPoint(midPoint)\r\n\r\n    # Verificar se o link está carregado e se o tubo está dentro da faixa de tolerância\r\n    type = doc.GetElement(linkInstance.GetTypeId()) \r\n    if RevitLinkType.IsLoaded(doc, type.Id) and pipeLength >= tolerance:\r\n        # Encontrar a família de tags\r\n        tagFamily = FilteredElementCollector(doc).OfClass(FamilySymbol).OfCategory(BuiltInCategory.OST_PipeTags).ToElements()\r\n        tagFamily = [f for f in tagFamily if f.Family.Name == tag_family and f.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString() == tagTypeName][0]\r\n\r\n        tagFamily.Activate()\r\n \r\n        # Criar referência\r\n        newRef = Reference(linkedPipe).CreateLinkReference(linkInstance)\r\n \r\n        # Criar transação\r\n        TransactionManager.Instance.EnsureInTransaction(doc)\r\n        \r\n        newTag = IndependentTag.Create(\r\n            doc, tagFamily.Id, doc.ActiveView.Id, newRef, False,       \r\n            TagOrientation.Horizontal, transformedMidPoint)   \r\n\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n       \r\n        return newTag  \r\n\r\n# Obter o documento atual\r\ndoc = DocumentManager.Instance.CurrentDBDocument  \r\n\r\n# Obter os elementos vinculados e direções a partir da entrada do nó Dynamo\r\nlinkInstance = IN[0]\r\nlinkedPipes = IN[1]\r\ndirections = IN[2]\r\ntagPosition = IN[3][0]\r\ntolerance = IN[3][1]\r\ntag_family = IN[3][6]\r\n\r\n# Garantir que as entradas sejam listas\r\nif not isinstance(linkedPipes, list):\r\n    linkedPipes = [linkedPipes]\r\nif not isinstance(directions, list):\r\n    directions = [directions]\r\n\r\n\r\n# Chamar a função para marcar os tubos no documento vinculado\r\nresult = []\r\n\r\nfor pipe, direction in zip(linkedPipes, directions):\r\n    tagTypeName = getTagTypeName(direction,tagPosition)\r\n    tag = TagLinkedPipe(doc, UnwrapElement(pipe), UnwrapElement(linkInstance), tagTypeName, tolerance)\r\n    if tag != None:\r\n        result.append(tag)\r\n\r\nshow_task_dialog(\"Aviso\",\"Tags inseridas com sucesso!\")\r\n\r\n# Definir a saída do script\r\nOUT = linkedPipes, directions",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "7e7be6c764de49de99e86f19b83efe0e",
+      "Inputs": [
+        {
+          "Id": "80dede611753499da867470c7775f89d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cc10819e189a4ebc85121b721917df2b",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3f7d1470bb6b4c5e988fcd7e82bb4aff",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2def39a0ca7146a0807d60f01d620408",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "84f4a0ee2cb44965b1d86ae40569c617",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitServices')\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.Revit.DB import *\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nfrom Autodesk.DesignScript.Geometry import Vector, Point\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\nactive_view = doc.ActiveView\r\n\r\n# Obter a direção para cima e para frente da vista\r\nview_up = active_view.UpDirection\r\nview_right = active_view.RightDirection\r\nview_direction = active_view.GetOrientation().ForwardDirection\r\n\r\nlists_of_elements = IN[0]\r\nelement_vector_tags = []\r\n\r\n# Lista para armazenar mensagens de depuração\r\ndebug_messages = [] \r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ndebug_messages.append(\"Iniciando transação\")\r\n\r\n# Iterar sobre cada lista de elementos\r\nfor elements in lists_of_elements: \r\n    dynamo_points = [] \r\n\r\n    for elem in elements:\r\n        elem = UnwrapElement(elem) \r\n        debug_messages.append(\"Processando elemento: {}\".format(elem.Id))\r\n        try:\r\n            category = elem.Category.Id\r\n            if category == ElementId(BuiltInCategory.OST_PipeCurves):\r\n                location_curve = elem.Location\r\n                if isinstance(location_curve, LocationCurve):\r\n                    curve = location_curve.Curve\r\n                    midpoint = curve.Evaluate(0.5, True)\r\n                    end_point = curve.GetEndPoint(1)\r\n                    dynamo_point = Point.ByCoordinates(midpoint.X, midpoint.Y, midpoint.Z)\r\n                    end_dynamo_point = Point.ByCoordinates(end_point.X, end_point.Y, end_point.Z)\r\n                    dynamo_points.append((elem, dynamo_point, end_dynamo_point))  # Associa o tubo ao ponto\r\n                    debug_messages.append(\"Adicionado ponto para tubo: {}\".format(dynamo_point))\r\n            elif category in [ElementId(BuiltInCategory.OST_PipeFitting), ElementId(BuiltInCategory.OST_PipeAccessory)]:\r\n                location_point = elem.Location\r\n                if isinstance(location_point, LocationPoint):\r\n                    fitting_point = Point.ByCoordinates(location_point.Point.X, location_point.Point.Y, location_point.Point.Z)\r\n                    dynamo_points.append((elem, fitting_point))  # Associa o joelho ao ponto\r\n                    debug_messages.append(\"Adicionado ponto para joelho: {}\".format(fitting_point))\r\n        except Exception as e:\r\n            debug_messages.append(\"Erro ao processar elemento {}: {}\".format(elem.Id, str(e)))\r\n\r\n    for i in range(len(dynamo_points)):\r\n        if len(dynamo_points[i]) == 3:  # É um tubo\r\n            tube_elem, start_point, end_dynamo_point = dynamo_points[i]\r\n            if i < len(dynamo_points) - 1 and len(dynamo_points[i + 1]) == 2:  # Próximo elemento é uma conexão\r\n                fitting_elem, end_point = dynamo_points[i + 1]\r\n            else:\r\n                end_point = end_dynamo_point\r\n\r\n            vector = Vector.ByTwoPoints(start_point, end_point)\r\n            debug_messages.append(\"Vetor criado entre {} e {}: {}\".format(start_point, end_point, vector))\r\n\r\n            # Verificar se o vetor original é vertical\r\n            is_vertical = round(vector.X, 2) == 0 and round(vector.Y, 2) == 0\r\n\r\n            if is_vertical:\r\n                if not isinstance(active_view, ViewPlan):\r\n                    if vector.Z > 0:\r\n                        tag = \"Seta para Cima\"\r\n                    elif vector.Z < 0:\r\n                        tag = \"Seta para Baixo\"\r\n                    else:\r\n                        tag = \"Sem direção definida\"\r\n                else:\r\n                    continue\r\n            else:\r\n                if isinstance(active_view, ViewPlan):\r\n                    # Para vistas de planta, usamos as componentes X e Y do vetor diretamente\r\n                    vector_x = vector.X\r\n                    vector_y = vector.Y\r\n                else: \r\n                    # Projetar o vetor nas direções da vista\r\n                    dot_right = vector.Dot(Vector.ByCoordinates(view_right.X, view_right.Y, view_right.Z))\r\n                    dot_left = vector.Dot(Vector.ByCoordinates(view_right.X, view_right.Y, view_right.Z).Reverse())\r\n                    \r\n                    dot_up = vector.Dot(Vector.ByCoordinates(view_up.X, view_up.Y, view_up.Z))\r\n                    dot_down = vector.Dot(Vector.ByCoordinates(view_up.X, view_up.Y, view_up.Z).Reverse())\r\n                    \r\n                if dot_right>dot_left and dot_right>dot_up and dot_right>dot_down:\r\n                    tag = \"Seta para Direita\"\r\n                elif dot_left > dot_right and dot_left > dot_up and dot_left > dot_down:\r\n                    tag = \"Seta para Esquerda\"\r\n                elif dot_up > dot_down:\r\n                \ttag = \"Seta para Cima\"\r\n                else:\r\n                \ttag = \"Seta para Baixo\"\r\n               \r\n\r\n            element_vector_tags.append((tube_elem, vector, tag))\r\n            debug_messages.append(\"Elemento {} associado ao vetor {} com tag {}\".format(tube_elem.Id, vector, tag)) \r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\ndebug_messages.append(\"Transação concluída\")\r\n\r\nOUT = element_vector_tags, debug_messages\r\n",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "d53c897f0225447a8a15dd88a8f08de5",
+      "Inputs": [
+        {
+          "Id": "e1d3783d4a204f8c8944188150381038",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "03ec63f0c1f646e4b5e0112df2b2233c",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "linkInstance = IN[1];\npipes = List.GetItemAtIndex(t2@L2<1>, 0);\ndirections = List.GetItemAtIndex(t2@L2<1>, 2);",
+      "Id": "81f9fa7272464b3498693c852076c25d",
+      "Inputs": [
+        {
+          "Id": "43facf34f4404a21b380bcca54050edb",
+          "Name": "IN",
+          "Description": "IN",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "784668c8c3dc4764bebeaf76fe97f88b",
+          "Name": "t2",
+          "Description": "t2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "41651ed49077470899e1ba73a93d322f",
+          "Name": "",
+          "Description": "linkInstance",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "be2af5a7835d4ea3a9d5ca759599e8fe",
+          "Name": "",
+          "Description": "pipes",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "79d77caad0954af99946387be760ec01",
+          "Name": "",
+          "Description": "directions",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Permite que o código DesignScript seja criado diretamente"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "dcd863c8683d407a94f558fdf8620fde",
+      "Inputs": [
+        {
+          "Id": "d61b55ae344c460da2b49b5a27b3498e",
+          "Name": "",
+          "Description": "Nó do qual a saída é exibida",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0c65c888081c4a118d28b7355af64cd4",
+          "Name": "",
+          "Description": "Saída do nó",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualizar a saída do nó"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('System.Windows.Forms')\r\nclr.AddReference('System.Drawing')\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitServices')\r\nclr.AddReference('RevitNodes')\r\nclr.AddReference('RevitAPIUI')\r\n\r\nfrom System.Windows.Forms import Application, Form, ComboBox, Label, Button, ComboBoxStyle, FormStartPosition, AnchorStyles\r\nfrom System.Drawing import Point, Size, Color\r\nfrom Autodesk.Revit.DB import BuiltInCategory, FilteredElementCollector, FamilySymbol\r\nfrom Autodesk.Revit.UI import TaskDialog, UIApplication\r\nfrom Autodesk.Revit.UI.Selection import ObjectType\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\n# Variável global para armazenar os resultados do formulário\r\nglobal result, selected_element\r\nresult = None\r\nselected_element = None\r\n\r\ntag_principal = IN[0]\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nclass MyForm(Form):\r\n    def __init__(self):\r\n        self.Text = \"Tags de fluxo automáticas\"\r\n        self.Size = Size(340, 400)\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.MaximizeBox = False\r\n        self.MinimizeBox = False\r\n        self.ShowIcon = False\r\n\r\n        # Configuração do tema Dark\r\n        self.BackColor = Color.FromArgb(45, 45, 48)\r\n        self.ForeColor = Color.White\r\n\r\n        # Label e DropDownList para Família da Tag\r\n        self.label_tag_family = Label()\r\n        self.label_tag_family.Text = \"Família da Tag\"\r\n        self.label_tag_family.Location = Point(20, 20)\r\n        self.Controls.Add(self.label_tag_family)\r\n\r\n        self.dropdown_tag_family = ComboBox()\r\n        self.dropdown_tag_family.Location = Point(140, 20)\r\n        self.dropdown_tag_family.Size = Size(150, 30)\r\n        self.dropdown_tag_family.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.Controls.Add(self.dropdown_tag_family)\r\n\r\n        # Preencher a DropDownList com os nomes das Tags de Tubos\r\n        self.populate_tag_families()\r\n\r\n        # Label e DropDownList para Posição da Tag\r\n        self.label_tag_pos = Label()\r\n        self.label_tag_pos.Text = \"Posição da Tag\"\r\n        self.label_tag_pos.Location = Point(20, 70)\r\n        self.Controls.Add(self.label_tag_pos)\r\n\r\n        self.dropdown_tag_pos = ComboBox()\r\n        self.dropdown_tag_pos.Items.Add(\"Tag acima\")\r\n        self.dropdown_tag_pos.Items.Add(\"Tag abaixo\")\r\n        self.dropdown_tag_pos.SelectedIndex = 0\r\n        self.dropdown_tag_pos.Location = Point(140, 70)\r\n        self.dropdown_tag_pos.Size = Size(150, 30)\r\n        self.dropdown_tag_pos.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.Controls.Add(self.dropdown_tag_pos)\r\n\r\n        # Label e DropDownList para Comprimento mínimo\r\n        self.label_min_length = Label()\r\n        self.label_min_length.Text = \"Tolerância (cm)\"\r\n        self.label_min_length.Location = Point(20, 120)\r\n        self.Controls.Add(self.label_min_length)\r\n\r\n        self.dropdown_min_length = ComboBox()\r\n        self.dropdown_min_length.Items.Add(\"15\")\r\n        self.dropdown_min_length.Items.Add(\"25\")\r\n        self.dropdown_min_length.Items.Add(\"50\")\r\n        self.dropdown_min_length.Items.Add(\"100\")\r\n        self.dropdown_min_length.Items.Add(\"150\")\r\n        self.dropdown_min_length.Items.Add(\"200\")\r\n        self.dropdown_min_length.Items.Add(\"300\")\r\n        self.dropdown_min_length.Items.Add(\"400\")\r\n        self.dropdown_min_length.Items.Add(\"500\")\r\n        self.dropdown_min_length.SelectedIndex = 0\r\n        self.dropdown_min_length.Location = Point(140, 120)\r\n        self.dropdown_min_length.Size = Size(150, 30)\r\n        self.dropdown_min_length.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.Controls.Add(self.dropdown_min_length)\r\n\r\n        # Botão de seleção de elemento vinculado\r\n        self.btn_select_element = Button()\r\n        self.btn_select_element.Text = \"Selecione o tubo de alimentação\"\r\n        self.btn_select_element.BackColor = Color.Red\r\n        self.btn_select_element.ForeColor = Color.White\r\n        self.btn_select_element.Size = Size(200, 40)\r\n        self.btn_select_element.Location = Point((self.ClientSize.Width - self.btn_select_element.Width) // 2, 170)\r\n        self.btn_select_element.Anchor = AnchorStyles.Top\r\n        self.btn_select_element.Click += self.on_select_element\r\n        self.Controls.Add(self.btn_select_element)\r\n\r\n        # Botão OK\r\n        self.btn_ok = Button()\r\n        self.btn_ok.Text = \"OK\"\r\n        self.btn_ok.Location = Point(125, 220)\r\n        self.btn_ok.Click += self.on_ok\r\n        self.Controls.Add(self.btn_ok)\r\n        \r\n        # Informação da empresa\r\n        self.company_info = Label()\r\n        self.company_info.Text = 'Versão 1.0\\nBIM Coder | Première Engenharia\\nBy: Fellipe Caetano\\nIG: @bimcoder YT: _bimcoder\\ncontato@bimcoder.net'\r\n        self.company_info.Location = Point(10, 270)\r\n        self.company_info.Size = Size(280, 80)\r\n        self.company_info.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.company_info) \r\n\r\n    def populate_tag_families(self):\r\n        self.dropdown_tag_family.Items.Clear()\r\n        \r\n        # Obter as famílias de tags de tubos\r\n        collector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_PipeTags).OfClass(FamilySymbol)\r\n        tag_families = sorted(set(symbol.Family.Name for symbol in collector))\r\n\r\n        # Colocar \"TAG-FLUXO.DIAMETRO COMPACTA\" como o primeiro item, se existir\r\n        if tag_principal in tag_families:\r\n            self.dropdown_tag_family.Items.Add(tag_principal)\r\n            tag_families.remove(tag_principal)   \r\n\r\n        for family in tag_families:\r\n            self.dropdown_tag_family.Items.Add(family)\r\n\r\n        # Definir o primeiro item selecionado como \"TAG-FLUXO.DIAMETRO COMPACTA\"\r\n        self.dropdown_tag_family.SelectedIndex = 0\r\n\r\n    def on_select_element(self, sender, event):\r\n        self.Hide()\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n        global selected_element, doclnk, lnkinst, transform\r\n        try:\r\n            #Referência do elemento\r\n            reference = uidoc.Selection.PickObject(ObjectType.LinkedElement, \"Selecione o tubo de alimentação\")\r\n            \r\n            lnkinst = doc.GetElement(reference) #Instância do vínculo\r\n            doclnk = lnkinst.GetLinkDocument() #Documento do vínculo\r\n            transform = lnkinst.GetTransform()  # Obtém a transformação do vínculo\r\n            main_pipe_candidate = doclnk.GetElement(reference.LinkedElementId) #Elemento selecionado\r\n                   \r\n            if main_pipe_candidate.Category.Id.IntegerValue == int(BuiltInCategory.OST_PipeCurves):\r\n                self.btn_select_element.BackColor = Color.Green  # Change button color to green\r\n                self.btn_select_element.Text = 'Elemento selecionado!'\r\n                selected_element = main_pipe_candidate\r\n                self.Show()\r\n                self.StartPosition = FormStartPosition.CenterScreen\r\n                self.BringToFront()\r\n            else:\r\n                selected_element = None\r\n                TaskDialog.Show('Aviso', 'Por favor, selecione um tubo!')\r\n                self.Show()\r\n                self.StartPosition = FormStartPosition.CenterScreen\r\n                self.BringToFront()\r\n        except Exception as e:\r\n            selected_element = None\r\n            TaskDialog.Show('Erro', str(e))\r\n            self.Show()\r\n            self.StartPosition = FormStartPosition.CenterScreen\r\n            self.BringToFront()\r\n\r\n    def on_ok(self, sender, event):\r\n        global tag_position, min_length, selected_tag_family\r\n        # Obter os valores das entradas do formulário\r\n        tag_position = self.dropdown_tag_pos.SelectedItem\r\n        min_length = self.dropdown_min_length.SelectedItem \r\n        selected_tag_family = self.dropdown_tag_family.SelectedItem\r\n\r\n        # Verificar se um elemento foi selecionado\r\n        if selected_element is None:\r\n            TaskDialog.Show('Aviso', 'Por favor, selecione um tubo!')\r\n            self.Show()\r\n            self.StartPosition = FormStartPosition.CenterScreen\r\n            self.BringToFront()\r\n            return\r\n            \r\n        self.Close()\r\n\r\n# Inicializar e executar o formulário\r\nform = MyForm()\r\nApplication.Run(form)\r\n\r\n#Seleção da região que contém os elementos à serem identificados\r\nTaskDialog.Show(\"Aviso\",\"Selecione a região que contém os elementos que as Tags serão inseridas\")\r\nreferences = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument.Selection.PickObjects(ObjectType.LinkedElement, \"Selecione os elementos\")\r\n\r\nids_selecionados=[]\r\n \r\nfor ref in references:\r\n\tlnkinst = doc.GetElement(ref)\r\n\tdoclnk = lnkinst.GetLinkDocument()\r\n\telement = doclnk.GetElement(ref.LinkedElementId) \r\n\tcategory = element.Category\r\n\tif category and category.Id.IntegerValue in (\r\n\t\tint(BuiltInCategory.OST_PipeCurves),\r\n\t\tint(BuiltInCategory.OST_PipeFitting),\r\n\t\tint(BuiltInCategory.OST_PlumbingFixtures),\r\n\t\tint(BuiltInCategory.OST_PipeAccessory)\r\n\t\t):\r\n\t\r\n\t\tids_selecionados.append(element.Id.IntegerValue)\r\n\r\n\r\n# Retornar os resultados\r\nform_result = (tag_position, int(min_length), selected_element, doclnk, lnkinst, transform,selected_tag_family, ids_selecionados)\r\n\r\nOUT = form_result\r\n",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "c4028f32b7534cbc9ea4e2e2a6e0f6d2",
+      "Inputs": [
+        {
+          "Id": "efd9c32a1b2c4a9690847a13f5bd05e8",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e451244fa245452db2c65331986c777a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "eaa244c14d7a46ecbdedf233680a3fe9",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "TAG-FLUXO.DIAMETRO COMPACTA",
+      "Id": "327863d898714b3698171dcdefc22137",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7846dcf7d060445db8edaee816ea846e",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Cria uma sequência de caracteres."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "d981265a35b74de29f81a03c91c0a8ed",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9a7e388b69f84ea684f2d32c9f530381",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Seleção entre True e False."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "388f2315bb83472e80d1fc96248ac5ae",
+      "End": "324432003a2543fca0a96530bcf31f96",
+      "Id": "0c6a445b81dc461cac80610b76995d4e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "388f2315bb83472e80d1fc96248ac5ae",
+      "End": "43facf34f4404a21b380bcca54050edb",
+      "Id": "99a40a94c8cc46aca3544fc9ba995a1c",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "388f2315bb83472e80d1fc96248ac5ae",
+      "End": "6ab14d874da847c1829fb34ac3eddd32",
+      "Id": "af74342bcd2a4396a23a8b85a9eb6c72",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "deda2737e47c41a1934acd5d5337d8c5",
+      "End": "e1d3783d4a204f8c8944188150381038",
+      "Id": "1e0f7c56b59b49db820f248786bde891",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "1dc43b2cc5e7437c90d3189c2fddf430",
+      "End": "784668c8c3dc4764bebeaf76fe97f88b",
+      "Id": "5d56131278374ee6bbf342c19cc5c376",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "03ec63f0c1f646e4b5e0112df2b2233c",
+      "End": "d97d14ae005f4189abdbb1f5879606cc",
+      "Id": "364258c0e6f04a43b364d78780c8bb12",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "03ec63f0c1f646e4b5e0112df2b2233c",
+      "End": "d61b55ae344c460da2b49b5a27b3498e",
+      "Id": "7cb5b270c4664b3eae95a4cff43558d2",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "41651ed49077470899e1ba73a93d322f",
+      "End": "80dede611753499da867470c7775f89d",
+      "Id": "6148bf12f93148fbafe9ba21c6bc0ff9",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "be2af5a7835d4ea3a9d5ca759599e8fe",
+      "End": "cc10819e189a4ebc85121b721917df2b",
+      "Id": "327da5cb39ef4cf0ba76d939a446fbdb",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "79d77caad0954af99946387be760ec01",
+      "End": "3f7d1470bb6b4c5e988fcd7e82bb4aff",
+      "Id": "5d73050a3a5e4351a5e8e0e28ade1478",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "eaa244c14d7a46ecbdedf233680a3fe9",
+      "End": "f644a3ebb4114a95ab28db94edd45371",
+      "Id": "a994274619594013b48752f1d88252bb",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "eaa244c14d7a46ecbdedf233680a3fe9",
+      "End": "2def39a0ca7146a0807d60f01d620408",
+      "Id": "eaad76c7c7bc4ad48e9314bc0af73256",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "7846dcf7d060445db8edaee816ea846e",
+      "End": "efd9c32a1b2c4a9690847a13f5bd05e8",
+      "Id": "09de4c1a1ce34722841ba9cbbb386f2d",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "9a7e388b69f84ea684f2d32c9f530381",
+      "End": "e451244fa245452db2c65331986c777a",
+      "Id": "e3b1dc012c284793949e8c0ba44e39a7",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Propriedades",
+      "Version": "2.19",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "6.1",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Nenhum",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Visualização do plano de fundo",
+      "EyeX": -3617.892333984375,
+      "EyeY": 895.73541259765625,
+      "EyeZ": -1135.4097900390625,
+      "LookX": -156.819580078125,
+      "LookY": -244.73541259765625,
+      "LookZ": 128.404541015625,
+      "UpX": -0.4763624370098114,
+      "UpY": 0.78801053762435913,
+      "UpZ": 0.39002370834350586
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Trechos separados",
+        "ShowGeometry": true,
+        "Id": "5efbac0f7de84e6da68eee4ecd079e29",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1080.1355856687189,
+        "Y": 734.55897734126086
+      },
+      {
+        "Name": "Definir os trechos",
+        "ShowGeometry": true,
+        "Id": "add3398faca343f7b6cb6e6a24a3a7d4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 870.30121383699543,
+        "Y": 445.607477673261
+      },
+      {
+        "Name": "Trechos",
+        "ShowGeometry": true,
+        "Id": "0d488c7bb6e1461489486795b66902f2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1132.2081395164864,
+        "Y": 461.92481480607046
+      },
+      {
+        "Name": "Tubos e Direções",
+        "ShowGeometry": true,
+        "Id": "019c4466b4d741e89b0f5811d40c9f69",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1637.3707924288165,
+        "Y": 456.06312773536223
+      },
+      {
+        "Name": "Inserir Tags",
+        "ShowGeometry": true,
+        "Id": "7e7be6c764de49de99e86f19b83efe0e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": true,
+        "Excluded": false,
+        "X": 2501.23813974759,
+        "Y": 173.92053064179689
+      },
+      {
+        "Name": "Definir as direções",
+        "ShowGeometry": true,
+        "Id": "d53c897f0225447a8a15dd88a8f08de5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1364.7729827563537,
+        "Y": 459.50519824809135
+      },
+      {
+        "Name": "Resultados",
+        "ShowGeometry": true,
+        "Id": "81f9fa7272464b3498693c852076c25d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1988.6712672703011,
+        "Y": 184.43111872862835
+      },
+      {
+        "Name": "Tubos, vetores e direções",
+        "ShowGeometry": true,
+        "Id": "dcd863c8683d407a94f558fdf8620fde",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1972.6371810497449,
+        "Y": 695.71717117147682
+      },
+      {
+        "Name": "Formulário",
+        "ShowGeometry": true,
+        "Id": "c4028f32b7534cbc9ea4e2e2a6e0f6d2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 647.18014458358994,
+        "Y": 458.19050788232681
+      },
+      {
+        "Name": "Tag principal",
+        "ShowGeometry": true,
+        "Id": "327863d898714b3698171dcdefc22137",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 335.7175597768217,
+        "Y": 457.93509342140266
+      },
+      {
+        "Name": "Boolean",
+        "ShowGeometry": true,
+        "Id": "d981265a35b74de29f81a03c91c0a8ed",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 388.28597753189206,
+        "Y": 643.84236903400176
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "16842d856b554dfc84851cf27e387273",
+        "Title": "Debugs",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "5efbac0f7de84e6da68eee4ecd079e29",
+          "dcd863c8683d407a94f558fdf8620fde"
+        ],
+        "HasNestedGroups": false,
+        "Left": 1070.1355856687189,
+        "Top": 636.71717117147682,
+        "Width": 1189.5015953810259,
+        "Height": 395.84180616978404,
+        "FontSize": 24.0,
+        "InitialTop": 695.71717117147682,
+        "InitialHeight": 183.84180616978404,
+        "TextblockHeight": 49.0,
+        "Background": "#FFCFCFCF"
+      },
+      {
+        "Id": "77442b16f2ac4186a8a65420db28818a",
+        "Title": "Input",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "327863d898714b3698171dcdefc22137",
+          "d3483b06a3cb43af99283a5558f422cf"
+        ],
+        "HasNestedGroups": false,
+        "Left": 20.616351186420616,
+        "Top": 398.93509342140266,
+        "Width": 559.101208590401,
+        "Height": 209.99999999999994,
+        "FontSize": 24.0,
+        "InitialTop": 457.93509342140266,
+        "InitialHeight": 183.53606162932186,
+        "TextblockHeight": 49.0,
+        "Background": "#FFFF931E"
+      },
+      {
+        "Id": "8f1c956c864746339b643016583c2c88",
+        "Title": "",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "c4028f32b7534cbc9ea4e2e2a6e0f6d2"
+        ],
+        "HasNestedGroups": false,
+        "Left": 637.18014458358994,
+        "Top": 399.19050788232681,
+        "Width": 183.0,
+        "Height": 220.99999999999994,
+        "FontSize": 24.0,
+        "InitialTop": 458.19050788232681,
+        "InitialHeight": 144.99999999999994,
+        "TextblockHeight": 49.0,
+        "Background": "#FFFF931E"
+      },
+      {
+        "Id": "18199f36c1674437829c006898f05634",
+        "Title": "",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "add3398faca343f7b6cb6e6a24a3a7d4"
+        ],
+        "HasNestedGroups": false,
+        "Left": 860.30121383699543,
+        "Top": 386.607477673261,
+        "Width": 225.0,
+        "Height": 191.0,
+        "FontSize": 24.0,
+        "InitialTop": 445.607477673261,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 49.0,
+        "Background": "#FFA548FF"
+      },
+      {
+        "Id": "f7c9f0f323bd4fad89ec7f5328d1d518",
+        "Title": "",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "0d488c7bb6e1461489486795b66902f2"
+        ],
+        "HasNestedGroups": false,
+        "Left": 1122.2081395164864,
+        "Top": 402.92481480607046,
+        "Width": 196.0,
+        "Height": 191.0,
+        "FontSize": 24.0,
+        "InitialTop": 461.92481480607046,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 49.0,
+        "Background": "#FFCFCFCF"
+      },
+      {
+        "Id": "955a4a5a137d430db2006d9e4091eb22",
+        "Title": "",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "d53c897f0225447a8a15dd88a8f08de5"
+        ],
+        "HasNestedGroups": false,
+        "Left": 1354.7729827563537,
+        "Top": 400.50519824809135,
+        "Width": 232.0,
+        "Height": 191.0,
+        "FontSize": 24.0,
+        "InitialTop": 459.50519824809135,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 49.0,
+        "Background": "#FFA548FF"
+      },
+      {
+        "Id": "c6e53d21b092454d93e288d3d3b0011d",
+        "Title": "",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "019c4466b4d741e89b0f5811d40c9f69"
+        ],
+        "HasNestedGroups": false,
+        "Left": 1627.3707924288165,
+        "Top": 397.06312773536223,
+        "Width": 219.0,
+        "Height": 191.00000000000006,
+        "FontSize": 24.0,
+        "InitialTop": 456.06312773536223,
+        "InitialHeight": 145.00000000000006,
+        "TextblockHeight": 49.0,
+        "Background": "#FFCFCFCF"
+      },
+      {
+        "Id": "af418aca374c429fa6ac7df00edd4bd3",
+        "Title": "",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "7e7be6c764de49de99e86f19b83efe0e",
+          "81f9fa7272464b3498693c852076c25d"
+        ],
+        "HasNestedGroups": false,
+        "Left": 1978.6712672703011,
+        "Top": 114.92053064179689,
+        "Width": 695.566872477289,
+        "Height": 291.0,
+        "FontSize": 24.0,
+        "InitialTop": 173.92053064179689,
+        "InitialHeight": 155.51058808683146,
+        "TextblockHeight": 49.0,
+        "Background": "#FF0DFFFF"
+      },
+      {
+        "Id": "d3483b06a3cb43af99283a5558f422cf",
+        "Title": "Altere este campo caso o nome da família de tag principal seja alterado. Desta forma, ele sempre aparecerá em primeiro na lista de tags",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 30.616351186420616,
+        "Top": 504.47115505072458,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 10.516183146982975,
+    "Y": 61.879568954624858,
+    "Zoom": 0.63638598650706468
+  }
+}

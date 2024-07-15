@@ -1,0 +1,240 @@
+{
+  "Uuid": "ce432ecc-affa-44d1-9c56-66200fe59a56",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Tags de prumadas-R00_script",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *  \r\nfrom Autodesk.Revit.UI import *\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\n# Obtenha o documento ativo e a instância do aplicativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n# Variáveis de configuração\r\ndisposicao_dos_pontos = IN[0][2]\r\ntag_family = IN[0][3]\r\nespacamento_vertical_escala_base_cm = 85.34\r\nespacamento_horizontal_escala_base_cm = 133\r\nescala_base = 100  # Escala de referência 1:100\r\n\r\n# Função para mover a tag para o ponto desejado\r\ndef move_tag_to_point(tag, target_point):\r\n    tag_location = tag.TagHeadPosition\r\n    translation_vector = XYZ(target_point.X - tag_location.X, target_point.Y - tag_location.Y, target_point.Z - tag_location.Z)\r\n    ElementTransformUtils.MoveElement(tag.Document, tag.Id, translation_vector)\r\n\r\n# Função para inserir tags nos tubos\r\ndef TagLinkedPipe(doc, linkedPipe, linkInstance, tagTypeName, insertionPoint):\r\n    # Obter a localização do tubo \r\n    location = linkedPipe.Location\r\n    curve = location.Curve  \r\n\r\n    # Verificar se o link está carregado \r\n    type = doc.GetElement(linkInstance.GetTypeId()) \r\n    if RevitLinkType.IsLoaded(doc, type.Id):\r\n        # Encontrar a família de tags\r\n        tagFamily = FilteredElementCollector(doc).OfClass(FamilySymbol).OfCategory(BuiltInCategory.OST_PipeTags).ToElements()\r\n        tagFamily = [f for f in tagFamily if f.Family.Name == tag_family and f.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString().replace(\" \", \"\") == tagTypeName][0]\r\n\r\n        tagFamily.Activate()\r\n \r\n        # Criar referência \r\n        newRef = Reference(linkedPipe).CreateLinkReference(linkInstance)\r\n\r\n        # Criar transação\r\n        TransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n        # Criar tag com leader\r\n        newTag = IndependentTag.Create(\r\n            doc, tagFamily.Id, doc.ActiveView.Id, newRef, True,  # Leader ativado\r\n            TagOrientation.Horizontal, insertionPoint)\r\n\r\n        # Mover a tag para o ponto exato clicado pelo usuário\r\n        move_tag_to_point(newTag, insertionPoint) \r\n\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n\r\n        return newTag, insertionPoint\r\n\r\n# Função para calcular os pontos de inserção considerando a orientação da vista e a escala\r\ndef calcular_pontos_de_insercao(ponto_inicial, quantidade, disposicao, espacamento_vertical_base_cm, espacamento_horizontal_base_cm, view):\r\n    pontos = []\r\n    view_direction = view.ViewDirection\r\n    up_direction = view.UpDirection\r\n    right_direction = view.RightDirection\r\n    \r\n    # Obter a escala da vista\r\n    escala_view = float(view.Scale)\r\n     \r\n    # Calcular espaçamento relativo à escala da vista usando a escala base 1:75\r\n    fator_escala = escala_view / escala_base\r\n    espacamento_vertical_ft = (float(espacamento_vertical_base_cm) / 30.48) * fator_escala\r\n    espacamento_horizontal_ft = (float(espacamento_horizontal_base_cm) / 30.48) * fator_escala\r\n    \r\n    for i in range(quantidade): \r\n        if disposicao == \"Horizontal\":\r\n            deslocamento = right_direction.Multiply(i * espacamento_horizontal_ft)\r\n        else:\r\n            deslocamento = up_direction.Multiply(-i * espacamento_vertical_ft)\r\n        \r\n        novo_ponto = ponto_inicial.Add(deslocamento)\r\n        pontos.append(novo_ponto)\r\n    \r\n    return pontos[::-1]  # Reverter a lista de pontos para começar pelo último tubo\r\n\r\n# Função para obter o plano de referência da vista ativa\r\ndef obter_plano_de_referencia(view):\r\n    if view.SketchPlane is not None:\r\n        return view.SketchPlane.GetPlane()\r\n    else:\r\n        # Cria um plano na origem com a orientação da vista\r\n        origin = XYZ(0, 0, 0)\r\n        normal = view.ViewDirection\r\n        plane = Plane.CreateByNormalAndOrigin(normal, origin)\r\n        TransactionManager.Instance.EnsureInTransaction(doc)\r\n        sketchPlane = SketchPlane.Create(doc,plane)\r\n        view.SketchPlane = sketchPlane\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n        return plane\r\n\r\n# Obter o ponto inicial do usuário\r\nview = doc.ActiveView\r\nplano_referencia = obter_plano_de_referencia(view)\r\nponto_inicial = uidoc.Selection.PickPoint(\"Selecione o ponto inicial para disposição das tags\")\r\n\r\n# Obter os elementos selecionados e filtrados\r\nselected_pipes = IN[0][0]\r\nlinked_instances = IN[0][1]\r\n\r\n# Calcular os pontos de inserção com base no ponto inicial, quantidade de tubos, disposição e orientação da vista\r\npontos_de_insercao = calcular_pontos_de_insercao(ponto_inicial, len(selected_pipes), disposicao_dos_pontos, espacamento_vertical_escala_base_cm, espacamento_horizontal_escala_base_cm, doc.ActiveView)\r\n\r\n# Criar tags para os tubos selecionados e armazenar as IDs das tags criadas\r\ncreated_tags = []\r\ntag_ids = []\r\nfor pipe, link_instance, insertion_point in zip(UnwrapElement(selected_pipes), UnwrapElement(linked_instances), pontos_de_insercao):\r\n    # Obter o nome do sistema do tubo para definir o tag_type_name\r\n    param_sistema = pipe.get_Parameter(BuiltInParameter.RBS_PIPING_SYSTEM_TYPE_PARAM)\r\n    if param_sistema:\r\n        tag_type_name = param_sistema.AsValueString().replace(\" \", \"\")\r\n    else:\r\n        tag_type_name = \"HID-ALIMENTAÇÃO\"  # Nome padrão caso o parâmetro não esteja presente \r\n    \r\n    tag, insertion_point = TagLinkedPipe(doc, pipe, link_instance, tag_type_name, insertion_point)\r\n    created_tags.append(tag)\r\n    tag_ids.append(tag.Id)\r\n    \r\n# Selecionar as tags criadas\r\nuidoc.Selection.SetElementIds(List[ElementId](tag_ids))    \r\n    \r\n# Saída do script\r\nOUT = created_tags\r\n",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "76812f3d448d40d6a139b3366528b484",
+      "Inputs": [
+        {
+          "Id": "414f66cbfc504e4286465a5b6bf189e3",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7880c48c7c3c4390a677f2b1a51fc7d0",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *  \r\nfrom Autodesk.Revit.UI import *\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\nfrom collections import defaultdict\r\n \r\n# Obtenha o documento ativo e a instância do aplicativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n# Classe para o formulário de seleção de elementos\r\nclr.AddReference('System.Windows.Forms')\r\nclr.AddReference('System.Drawing')\r\n\r\nfrom System.Windows.Forms import Application, Form, ComboBox, Label, Button, ComboBoxStyle, FormStartPosition, AnchorStyles\r\nfrom System.Drawing import Point, Size, Color\r\n\r\nfirst_tag = IN[0]\r\n\r\nclass MyForm(Form):\r\n    def __init__(self):\r\n        self.Text = \"Formulário Customizado\"\r\n        self.Size = Size(340, 350)  # Ajuste o tamanho do formulário para acomodar o novo campo\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.MaximizeBox = False\r\n        self.MinimizeBox = False\r\n        self.ShowIcon = False\r\n\r\n        # Configuração do tema Dark\r\n        self.BackColor = Color.FromArgb(45, 45, 48)\r\n        self.ForeColor = Color.White\r\n\r\n        # Label e DropDownList para Família da Tag\r\n        self.label_tag_family = Label()\r\n        self.label_tag_family.Text = \"Família da Tag\"\r\n        self.label_tag_family.Location = Point(20, 20)\r\n        self.Controls.Add(self.label_tag_family)\r\n\r\n        self.dropdown_tag_family = ComboBox()\r\n        self.dropdown_tag_family.Location = Point(140, 20)\r\n        self.dropdown_tag_family.Size = Size(150, 30)\r\n        self.dropdown_tag_family.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.Controls.Add(self.dropdown_tag_family)\r\n\r\n        # Preencher a DropDownList com os nomes das Tags de Tubos\r\n        self.populate_tag_families()\r\n\r\n        # Label e DropDownList para orientação\r\n        self.label_orientation = Label()\r\n        self.label_orientation.Text = \"Orientação da Tag\"\r\n        self.label_orientation.Location = Point(20, 70)\r\n        self.Controls.Add(self.label_orientation) \r\n\r\n        self.dropdown_orientation = ComboBox()\r\n        self.dropdown_orientation.Items.Add(\"Horizontal\")\r\n        self.dropdown_orientation.Items.Add(\"Vertical\")\r\n        self.dropdown_orientation.SelectedIndex = 1\r\n        self.dropdown_orientation.Location = Point(140, 70)\r\n        self.dropdown_orientation.Size = Size(150, 30)\r\n        self.dropdown_orientation.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.Controls.Add(self.dropdown_orientation)\r\n\r\n        # Botão de seleção de elementos de vínculos\r\n        self.btn_select_element = Button()\r\n        self.btn_select_element.Text = \"Selecione os elementos\"\r\n        self.btn_select_element.BackColor = Color.Red\r\n        self.btn_select_element.ForeColor = Color.White\r\n        self.btn_select_element.Size = Size(200, 40)\r\n        self.btn_select_element.Location = Point((self.ClientSize.Width - self.btn_select_element.Width) // 2, 120)\r\n        self.btn_select_element.Anchor = AnchorStyles.Top\r\n        self.btn_select_element.Click += self.on_select_elements\r\n        self.Controls.Add(self.btn_select_element)\r\n\r\n        # Botão OK\r\n        self.btn_ok = Button()\r\n        self.btn_ok.Text = \"OK\"\r\n        self.btn_ok.Location = Point(130, 180)\r\n        self.btn_ok.Click += self.on_ok\r\n        self.Controls.Add(self.btn_ok)\r\n        \r\n        # Informação da empresa\r\n        self.company_info = Label()\r\n        self.company_info.Text = 'Versão 1.0\\nBIM Coder | Première Engenharia\\nBy: Fellipe Caetano\\nIG: @bimcoder YT: _bimcoder\\ncontato@bimcoder.net'\r\n        self.company_info.Location = Point(10, 230)\r\n        self.company_info.Size = Size(280, 80)\r\n        self.company_info.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.company_info)\r\n\r\n        # Variável para armazenar os elementos selecionados\r\n        self.selected_elements = []\r\n        self.orientation = None\r\n\r\n    def populate_tag_families(self):\r\n        self.dropdown_tag_family.Items.Clear()\r\n        \r\n        # Obter as famílias de tags de tubos\r\n        collector = FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_PipeTags).OfClass(FamilySymbol)\r\n        tag_families = sorted(set(symbol.Family.Name for symbol in collector))\r\n\r\n        # Colocar \"TAG-PRUMADAS\" como o primeiro item, se existir\r\n        if \"TAG-PRUMADAS\" in tag_families:\r\n            self.dropdown_tag_family.Items.Add(first_tag)\r\n            tag_families.remove(first_tag)\r\n\r\n        for family in tag_families:\r\n            self.dropdown_tag_family.Items.Add(family)\r\n\r\n        # Definir o primeiro item selecionado como \"TAG-PRUMADAS\"\r\n        self.dropdown_tag_family.SelectedIndex = 0\r\n\r\n    def on_select_elements(self, sender, event):\r\n        self.Hide()\r\n        try:\r\n            references = uidoc.Selection.PickObjects(ObjectType.LinkedElement, \"Selecione os elementos do vínculo\")\r\n            self.selected_elements = references\r\n\r\n            if self.selected_elements:\r\n                self.btn_select_element.BackColor = Color.Green  # Change button color to green\r\n                self.btn_select_element.Text = 'Elementos selecionados!'\r\n                self.Show()\r\n                self.StartPosition = FormStartPosition.CenterScreen\r\n                self.BringToFront()\r\n            else:\r\n                self.selected_elements = []\r\n                TaskDialog.Show('Aviso', 'Por favor, selecione elementos válidos!')\r\n                self.Show()\r\n                self.StartPosition = FormStartPosition.CenterScreen\r\n                self.BringToFront()\r\n        except Exception as e:\r\n            self.selected_elements = []\r\n            TaskDialog.Show('Erro', str(e))\r\n            self.Show()\r\n            self.StartPosition = FormStartPosition.CenterScreen\r\n            self.BringToFront()\r\n\r\n    def on_ok(self, sender, event):\r\n        if not self.selected_elements:\r\n            TaskDialog.Show('Aviso', 'Por favor, selecione elementos!')\r\n            self.Show()\r\n            self.StartPosition = FormStartPosition.CenterScreen\r\n            self.BringToFront()\r\n            return\r\n            \r\n        global tag_family    \r\n        \r\n        self.orientation = self.dropdown_orientation.SelectedItem\r\n        tag_family = self.dropdown_tag_family.SelectedItem\r\n        self.Close()\r\n\r\n# Função para verificar se o tubo é vertical (ou levemente inclinado no eixo Z)\r\ndef is_vertical(element, tolerance=0.01):\r\n    location_curve = element.Location\r\n    if hasattr(location_curve, 'Curve'):\r\n        curve = location_curve.Curve\r\n        start_point = curve.GetEndPoint(0)\r\n        end_point = curve.GetEndPoint(1)\r\n        rounded_start_x = round(start_point.X, 2)\r\n        rounded_start_y = round(start_point.Y, 2)\r\n        rounded_end_x = round(end_point.X, 2)\r\n        rounded_end_y = round(end_point.Y, 2)\r\n        return abs(rounded_start_x - rounded_end_x) <= tolerance and abs(rounded_start_y - rounded_end_y) <= tolerance\r\n    return False\r\n\r\n# Função para selecionar múltiplos elementos de um vínculo e filtrar apenas os tubos verticais e conduítes com p.CODIGO\r\ndef select_linked_prumadas(selected_elements):\r\n    try:\r\n        linked_prumadas = []\r\n\r\n        for ref in selected_elements:\r\n            link_instance = doc.GetElement(ref.ElementId)\r\n            link_doc = link_instance.GetLinkDocument()\r\n            if link_doc is not None:\r\n                linked_element = link_doc.GetElement(ref.LinkedElementId)\r\n                if linked_element is not None:\r\n                    if linked_element.Category.Id.IntegerValue in [int(BuiltInCategory.OST_PipeCurves), int(BuiltInCategory.OST_Conduit)]:\r\n                        if is_vertical(linked_element):\r\n                            param_codigo = linked_element.LookupParameter(\"p.CODIGO\")\r\n                            param_sistema = linked_element.get_Parameter(BuiltInParameter.RBS_PIPING_SYSTEM_TYPE_PARAM)\r\n                            if param_codigo and param_codigo.HasValue and param_sistema and param_sistema.HasValue:\r\n                                codigo = param_codigo.AsString()\r\n                                sistema = param_sistema.AsValueString()\r\n                                linked_prumadas.append((linked_element, link_instance, sistema, codigo))\r\n\r\n        grouped_prumadas = defaultdict(list)\r\n        for prumada, link_instance, sistema, codigo in linked_prumadas:\r\n            key = (sistema, codigo)\r\n            grouped_prumadas[key].append((prumada, link_instance))\r\n\r\n        highest_prumadas = []\r\n        for key, prumadas in grouped_prumadas.items():\r\n            highest_prumada = max(prumadas, key=lambda p: p[0].Location.Curve.GetEndPoint(0).Z)\r\n            highest_prumadas.append(highest_prumada)\r\n\r\n        prumadas_list = [prumada for prumada, _ in highest_prumadas]\r\n        link_instances_list = [link_instance for _, link_instance in highest_prumadas]\r\n\r\n        return prumadas_list, link_instances_list\r\n\r\n    except Exception as e:\r\n        return str(e)\r\n \r\n# Executar o formulário\r\nApplication.EnableVisualStyles() \r\nform = MyForm()\r\nApplication.Run(form)\r\n\r\n# Após o fechamento do formulário, processar a seleção\r\nif form.selected_elements:\r\n    prumadas_list, link_instances_list = select_linked_prumadas(form.selected_elements)\r\n\r\n    # Determinar se os tubos estão dispostos horizontalmente ou verticalmente em planta\r\n    if form.orientation == \"Horizontal\":\r\n        prumadas_list.sort(key=lambda p: p.Location.Curve.GetEndPoint(0).X)\r\n    else:\r\n        prumadas_list.sort(key=lambda p: p.Location.Curve.GetEndPoint(0).Y)\r\n\r\n    # Saída do script\r\n    OUT = (prumadas_list, link_instances_list, form.orientation, tag_family)\r\nelse:\r\n    OUT = (\"Nenhum elemento selecionado.\", [], None)\r\n",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "a96cc1b4d32a4d5ab00fc6a7ffeaf17c",
+      "Inputs": [
+        {
+          "Id": "3259e1146f334f1885ddd806ac58b22d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "65ccd5d36ec24fee9c615fc9f0b8c791",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "TAG-PRUMADAS",
+      "Id": "326d96ec90c4465da8f45444837b3790",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "25494f0ab1814df0b4ac5a2b6a860d65",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Cria uma sequência de caracteres."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "65ccd5d36ec24fee9c615fc9f0b8c791",
+      "End": "414f66cbfc504e4286465a5b6bf189e3",
+      "Id": "1afb1523f5e84ed195f83bdf1511fde1",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "25494f0ab1814df0b4ac5a2b6a860d65",
+      "End": "3259e1146f334f1885ddd806ac58b22d",
+      "Id": "2fd5de61319f4389b16ce024c5c9c6b9",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.16",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "3.0",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Nenhum",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Visualização do plano de fundo",
+      "EyeX": 50.062667846679688,
+      "EyeY": 4391.13525390625,
+      "EyeZ": -37.018901824951172,
+      "LookX": 3.7686767578125,
+      "LookY": -3.13525390625,
+      "LookZ": -9.979827880859375,
+      "UpX": 0.024638118222355843,
+      "UpY": 0.997563898563385,
+      "UpZ": -0.065263703465461731
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Insere as Tags",
+        "ShowGeometry": true,
+        "Id": "76812f3d448d40d6a139b3366528b484",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 950.61015856205438,
+        "Y": -528.54850138942425
+      },
+      {
+        "Name": "Obtém as prumadas e Links",
+        "ShowGeometry": true,
+        "Id": "a96cc1b4d32a4d5ab00fc6a7ffeaf17c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 637.3115234572897,
+        "Y": -528.94473188155769
+      },
+      {
+        "Name": "Primeira TAG",
+        "ShowGeometry": true,
+        "Id": "326d96ec90c4465da8f45444837b3790",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 252.90622210637366,
+        "Y": -529.332522472753
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "0f9bb6deb7904f9a982252bd461649bf",
+        "Title": "CAMPOS PERSONALIZÁVEIS",
+        "DescriptionText": "Nome da Tag - Prumadas",
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "326d96ec90c4465da8f45444837b3790",
+          "df617b33f3ba4544aba0c3867f7e0439"
+        ],
+        "HasNestedGroups": false,
+        "Left": -83.313371243174515,
+        "Top": -588.332522472753,
+        "Width": 532.21959334954818,
+        "Height": 191.0,
+        "FontSize": 24.0,
+        "InitialTop": -529.332522472753,
+        "InitialHeight": 162.0,
+        "TextblockHeight": 49.0,
+        "Background": "#FFFF931E"
+      },
+      {
+        "Id": "df617b33f3ba4544aba0c3867f7e0439",
+        "Title": "Altere estes campos caso o nome da família da TAG principal de prumadas seja alterada.\n\nDesta forma, essa família sempre aparecerá em primeiro na lista de tags.",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": -73.313371243174515,
+        "Top": -512.94560229077138,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 148.7507144169017,
+    "Y": 884.7902045177816,
+    "Zoom": 0.82313156043115143
+  }
+}

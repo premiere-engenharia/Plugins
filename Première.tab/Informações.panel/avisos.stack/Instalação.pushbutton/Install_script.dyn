@@ -1,0 +1,274 @@
+{
+  "Uuid": "7fff9349-60eb-4480-a336-7741b922c7cf",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Install_script",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "archilab.Revit.Views.Views.Duplicate@Revit.Elements.Views.View,string",
+      "Id": "b801a1946d8e4c7c88254af6d8cd0d1d",
+      "Inputs": [
+        {
+          "Id": "7c4ef5fc803f444b95090227c577430c",
+          "Name": "view",
+          "Description": "View",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b48cc3e585a546bbbe5943e3f767af09",
+          "Name": "options",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "07c801b9adc043748df390ae4626bcdc",
+          "Name": "View",
+          "Description": "View",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Views.Duplicate (view: View, options: string): View"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Carregar as bibliotecas DesignScript e padrão do Python\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# As entradas para este nó serão armazenadas como uma lista nas variáveis IN.\r\ndataEnteringNode = IN\r\n\r\n# Insira o código abaixo desta linha\r\n\r\n# Atribua a sua saída para a variável OUT.\r\nOUT = 0",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "0f44e7d552b34e38b25d17c0a3104de7",
+      "Inputs": [
+        {
+          "Id": "4227518abca942bf810904771e446ea1",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f274260b09a04193876b24b779e64ebb",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\nclr.AddReference(\"RevitServices\")\r\nclr.AddReference(\"RevitNodes\")\r\n\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nfrom Revit.Elements import Element\r\n\r\n# Obtém o documento ativo do Revit\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nif IN[0] and IN[1] !=None:\r\n\tOUT = TaskDialog.Show(\"Aviso\",\"Todos os pacotes já estão instalados.\")\r\n",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "c6ef21830c1f4beaba79c0bbf8743ac7",
+      "Inputs": [
+        {
+          "Id": "aecd32ea0d604a5a8218adc2afd43971",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5569858d338244919d95408b80652dee",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9eafda4047684d0d928714d0df27f0a7",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "07c801b9adc043748df390ae4626bcdc",
+      "End": "aecd32ea0d604a5a8218adc2afd43971",
+      "Id": "c3b9e7a63f38497e8e2dd397df32cf32",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f274260b09a04193876b24b779e64ebb",
+      "End": "5569858d338244919d95408b80652dee",
+      "Id": "28a8e88bf08b46ee9f66483648bb3848",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "archi-lab.net",
+      "Version": "2024.217.1024",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "b801a1946d8e4c7c88254af6d8cd0d1d"
+      ]
+    }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Propriedades",
+      "Version": "2.16",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "3.0",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Nenhum",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Visualização do plano de fundo",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Views.Duplicate",
+        "ShowGeometry": true,
+        "Id": "b801a1946d8e4c7c88254af6d8cd0d1d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 580.0,
+        "Y": 386.0
+      },
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "0f44e7d552b34e38b25d17c0a3104de7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 592.2057929642616,
+        "Y": 601.11889850033651
+      },
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "c6ef21830c1f4beaba79c0bbf8743ac7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 869.21447092091682,
+        "Y": 482.49373328301004
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "bc7f65e897624320931974096ff70ffe",
+        "Title": "Pacote archilab",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 632.26347710922209,
+        "Top": 348.93292848717385,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "cc96eb3e4f0148c08a23a7287e274460",
+        "Title": "IronPython2.7",
+        "DescriptionText": null,
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [],
+        "HasNestedGroups": false,
+        "Left": 629.37579064350257,
+        "Top": 564.76369838197763,
+        "Width": 0.0,
+        "Height": 0.0,
+        "FontSize": 36.0,
+        "InitialTop": 0.0,
+        "InitialHeight": 0.0,
+        "TextblockHeight": 0.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": -765.334446571665,
+    "Y": -317.17631259703558,
+    "Zoom": 1.4425890929331344
+  }
+}

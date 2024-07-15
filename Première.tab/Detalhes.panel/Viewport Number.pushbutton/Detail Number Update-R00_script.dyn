@@ -1,0 +1,112 @@
+{
+  "Uuid": "e18bc28c-d429-4267-85f8-09b3764343f0",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Detail Number Update - Iron Python",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\n# Obter o documento ativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Obter a vista ativa\r\nactive_view = doc.ActiveView\r\n\r\n# Obter todas as viewports da prancha atual (vista ativa)\r\nviewports = FilteredElementCollector(doc, active_view.Id).OfCategory(BuiltInCategory.OST_Viewports).ToElements()\r\n\r\n# Lista para armazenar viewports que falharem na atribuição do número de detalhe\r\nfailed_viewports = []\r\n\r\n# Iniciar a transação\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\nfor viewport in viewports:\r\n    # Obter a vista associada à viewport\r\n    view = doc.GetElement(viewport.ViewId)\r\n    \r\n    # Verificar se a vista é uma vista de piso\r\n    if view.ViewType == ViewType.FloorPlan:\r\n        \r\n        # Capturar os 2 últimos dígitos do nome da vista\r\n        view_name = view.Name\r\n        last_two_digits = view_name[-3:]\r\n        \r\n        \r\n        # Atribuir ao parâmetro \"Número de Detalhe\"\r\n        detail_number_param = view.get_Parameter(BuiltInParameter.VIEWPORT_DETAIL_NUMBER)\r\n        detail_number_param.Set(last_two_digits)\r\n            \r\n \r\n# Finalizar a transação\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n# Verificar se há viewports que falharam\r\nif failed_viewports:\r\n    message = \"Não foi possível adicionar o número de detalhe às vistas selecionadas. Confira se esse número já não está inserido em outra vista da prancha atual.\"\r\n    # Exibir mensagem de erro\r\n    TaskDialog.Show(\"Erro\", message)\r\nelse:\r\n    TaskDialog.Show(\"Aviso\",\"Números de detalhe atualizados com sucesso!\")\r\n \r\nOUT = 0     ",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "790376f61113492cb9a475120c034dfb",
+      "Inputs": [
+        {
+          "Id": "e2fc1a77da3c4f62abe42d8aa43a87d7",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "58e17c1ce28f48808640fc15c74c026f",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script Python incorporado."
+    }
+  ],
+  "Connectors": [],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Propriedades",
+      "Version": "2.16",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "3.0",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Nenhum",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.16.2.5624",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Visualização do plano de fundo",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Id": "790376f61113492cb9a475120c034dfb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 181.0,
+        "Y": 308.0
+      }
+    ],
+    "Annotations": [],
+    "X": 22.149759919005589,
+    "Y": -234.07383828415379,
+    "Zoom": 1.8569439135452277
+  }
+}
