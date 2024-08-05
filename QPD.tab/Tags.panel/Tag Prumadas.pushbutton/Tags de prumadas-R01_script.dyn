@@ -2,7 +2,7 @@
   "Uuid": "ce432ecc-affa-44d1-9c56-66200fe59a56",
   "IsCustomNode": false,
   "Description": "",
-  "Name": "Tags de prumadas-R00_script",
+  "Name": "Tags de prumadas-R01_script",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -12,7 +12,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *  \r\nfrom Autodesk.Revit.UI import *\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\n# Obtenha o documento ativo e a instância do aplicativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n# Variáveis de configuração\r\ndisposicao_dos_pontos = IN[0][2]\r\ntag_family = IN[0][3]\r\nespacamento_vertical_escala_base_cm = 85.34\r\nespacamento_horizontal_escala_base_cm = 133\r\nescala_base = 100  # Escala de referência 1:100\r\n\r\n# Função para mover a tag para o ponto desejado\r\ndef move_tag_to_point(tag, target_point):\r\n    tag_location = tag.TagHeadPosition\r\n    translation_vector = XYZ(target_point.X - tag_location.X, target_point.Y - tag_location.Y, target_point.Z - tag_location.Z)\r\n    ElementTransformUtils.MoveElement(tag.Document, tag.Id, translation_vector)\r\n\r\n# Função para inserir tags nos tubos\r\ndef TagLinkedPipe(doc, linkedPipe, linkInstance, tagTypeName, insertionPoint):\r\n    # Obter a localização do tubo \r\n    location = linkedPipe.Location\r\n    curve = location.Curve  \r\n\r\n    # Verificar se o link está carregado \r\n    type = doc.GetElement(linkInstance.GetTypeId()) \r\n    if RevitLinkType.IsLoaded(doc, type.Id):\r\n        # Encontrar a família de tags\r\n        tagFamily = FilteredElementCollector(doc).OfClass(FamilySymbol).OfCategory(BuiltInCategory.OST_PipeTags).ToElements()\r\n        tagFamily = [f for f in tagFamily if f.Family.Name == tag_family and f.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString().replace(\" \", \"\") == tagTypeName][0]\r\n\r\n        tagFamily.Activate()\r\n \r\n        # Criar referência \r\n        newRef = Reference(linkedPipe).CreateLinkReference(linkInstance)\r\n\r\n        # Criar transação\r\n        TransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n        # Criar tag com leader\r\n        newTag = IndependentTag.Create(\r\n            doc, tagFamily.Id, doc.ActiveView.Id, newRef, True,  # Leader ativado\r\n            TagOrientation.Horizontal, insertionPoint)\r\n\r\n        # Mover a tag para o ponto exato clicado pelo usuário\r\n        move_tag_to_point(newTag, insertionPoint) \r\n\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n\r\n        return newTag, insertionPoint\r\n\r\n# Função para calcular os pontos de inserção considerando a orientação da vista e a escala\r\ndef calcular_pontos_de_insercao(ponto_inicial, quantidade, disposicao, espacamento_vertical_base_cm, espacamento_horizontal_base_cm, view):\r\n    pontos = []\r\n    view_direction = view.ViewDirection\r\n    up_direction = view.UpDirection\r\n    right_direction = view.RightDirection\r\n    \r\n    # Obter a escala da vista\r\n    escala_view = float(view.Scale)\r\n     \r\n    # Calcular espaçamento relativo à escala da vista usando a escala base 1:75\r\n    fator_escala = escala_view / escala_base\r\n    espacamento_vertical_ft = (float(espacamento_vertical_base_cm) / 30.48) * fator_escala\r\n    espacamento_horizontal_ft = (float(espacamento_horizontal_base_cm) / 30.48) * fator_escala\r\n    \r\n    for i in range(quantidade): \r\n        if disposicao == \"Horizontal\":\r\n            deslocamento = right_direction.Multiply(i * espacamento_horizontal_ft)\r\n        else:\r\n            deslocamento = up_direction.Multiply(-i * espacamento_vertical_ft)\r\n        \r\n        novo_ponto = ponto_inicial.Add(deslocamento)\r\n        pontos.append(novo_ponto)\r\n    \r\n    return pontos[::-1]  # Reverter a lista de pontos para começar pelo último tubo\r\n\r\n# Função para obter o plano de referência da vista ativa\r\ndef obter_plano_de_referencia(view):\r\n    if view.SketchPlane is not None:\r\n        return view.SketchPlane.GetPlane()\r\n    else:\r\n        # Cria um plano na origem com a orientação da vista\r\n        origin = XYZ(0, 0, 0)\r\n        normal = view.ViewDirection\r\n        plane = Plane.CreateByNormalAndOrigin(normal, origin)\r\n        TransactionManager.Instance.EnsureInTransaction(doc)\r\n        sketchPlane = SketchPlane.Create(doc,plane)\r\n        view.SketchPlane = sketchPlane\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n        return plane\r\n\r\n# Obter o ponto inicial do usuário\r\nview = doc.ActiveView\r\nplano_referencia = obter_plano_de_referencia(view)\r\nponto_inicial = uidoc.Selection.PickPoint(\"Selecione o ponto inicial para disposição das tags\")\r\n\r\n# Obter os elementos selecionados e filtrados\r\nselected_pipes = IN[0][0]\r\nlinked_instances = IN[0][1]\r\n\r\n# Calcular os pontos de inserção com base no ponto inicial, quantidade de tubos, disposição e orientação da vista\r\npontos_de_insercao = calcular_pontos_de_insercao(ponto_inicial, len(selected_pipes), disposicao_dos_pontos, espacamento_vertical_escala_base_cm, espacamento_horizontal_escala_base_cm, doc.ActiveView)\r\n\r\n# Criar tags para os tubos selecionados e armazenar as IDs das tags criadas\r\ncreated_tags = []\r\ntag_ids = []\r\nfor pipe, link_instance, insertion_point in zip(UnwrapElement(selected_pipes), UnwrapElement(linked_instances), pontos_de_insercao):\r\n    # Obter o nome do sistema do tubo para definir o tag_type_name\r\n    param_sistema = pipe.get_Parameter(BuiltInParameter.RBS_PIPING_SYSTEM_TYPE_PARAM)\r\n    if param_sistema:\r\n        tag_type_name = param_sistema.AsValueString().replace(\" \", \"\")\r\n    else:\r\n        tag_type_name = \"HID-ALIMENTAÇÃO\"  # Nome padrão caso o parâmetro não esteja presente \r\n    \r\n    tag, insertion_point = TagLinkedPipe(doc, pipe, link_instance, tag_type_name, insertion_point)\r\n    created_tags.append(tag)\r\n    tag_ids.append(tag.Id)\r\n    \r\n# Selecionar as tags criadas\r\nuidoc.Selection.SetElementIds(List[ElementId](tag_ids))    \r\n    \r\n# Saída do script\r\nOUT = created_tags\r\n",
+      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.DB import *  \r\nfrom Autodesk.Revit.UI import *\r\nfrom Autodesk.Revit.UI.Selection import *\r\n\r\n# Obtenha o documento ativo e a instância do aplicativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n\r\n# Variáveis de configuração\r\ndisposicao_dos_pontos = IN[0][2]\r\ntag_family = IN[0][3]\r\nespacamento_vertical_escala_base_cm = 85.34\r\nespacamento_horizontal_escala_base_cm = 133\r\nescala_base = 100  # Escala de referência 1:100\r\n\r\n# Função para mover a tag para o ponto desejado\r\ndef move_tag_to_point(tag, target_point):\r\n    tag_location = tag.TagHeadPosition\r\n    translation_vector = XYZ(target_point.X - tag_location.X, target_point.Y - tag_location.Y, target_point.Z - tag_location.Z)\r\n    ElementTransformUtils.MoveElement(tag.Document, tag.Id, translation_vector)\r\n\r\n# Função para inserir tags nos tubos\r\ndef TagLinkedPipe(doc, linkedPipe, linkInstance, tagTypeName, insertionPoint):\r\n    # Obter a localização do tubo \r\n    location = linkedPipe.Location\r\n    curve = location.Curve  \r\n\r\n    # Verificar se o link está carregado \r\n    type = doc.GetElement(linkInstance.GetTypeId()) \r\n    if RevitLinkType.IsLoaded(doc, type.Id):\r\n        # Encontrar a família de tags\r\n        tagFamily = FilteredElementCollector(doc).OfClass(FamilySymbol).OfCategory(BuiltInCategory.OST_PipeTags).ToElements()\r\n        tagFamily = [f for f in tagFamily if f.Family.Name == tag_family and f.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM).AsString().replace(\" \", \"\") == tagTypeName][0]\r\n\r\n        tagFamily.Activate()\r\n \r\n        # Criar referência \r\n        newRef = Reference(linkedPipe).CreateLinkReference(linkInstance)\r\n\r\n        # Criar transação\r\n        TransactionManager.Instance.EnsureInTransaction(doc)\r\n\r\n        # Criar tag com leader\r\n        newTag = IndependentTag.Create(\r\n            doc, tagFamily.Id, doc.ActiveView.Id, newRef, True,  # Leader ativado\r\n            TagOrientation.Horizontal, insertionPoint)\r\n\r\n        # Mover a tag para o ponto exato clicado pelo usuário\r\n        move_tag_to_point(newTag, insertionPoint) \r\n\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n\r\n        return newTag, insertionPoint\r\n\r\n# Função para calcular os pontos de inserção considerando a orientação da vista e a escala\r\ndef calcular_pontos_de_insercao(ponto_inicial, quantidade, disposicao, espacamento_vertical_base_cm, espacamento_horizontal_base_cm, view):\r\n    pontos = []\r\n    view_direction = view.ViewDirection\r\n    up_direction = view.UpDirection\r\n    right_direction = view.RightDirection\r\n    \r\n    # Obter a escala da vista\r\n    escala_view = float(view.Scale)\r\n     \r\n    # Calcular espaçamento relativo à escala da vista usando a escala base 1:75\r\n    fator_escala = escala_view / escala_base\r\n    espacamento_vertical_ft = (float(espacamento_vertical_base_cm) / 30.48) * fator_escala\r\n    espacamento_horizontal_ft = (float(espacamento_horizontal_base_cm) / 30.48) * fator_escala\r\n    \r\n    for i in range(quantidade): \r\n        if disposicao == \"Horizontal\":\r\n            deslocamento = right_direction.Multiply(i * espacamento_horizontal_ft)\r\n        else:\r\n            deslocamento = up_direction.Multiply(-i * espacamento_vertical_ft)\r\n        \r\n        novo_ponto = ponto_inicial.Add(deslocamento)\r\n        pontos.append(novo_ponto)\r\n        \r\n    if disposicao == \"Horizontal\":\r\n    \treturn pontos\r\n    else:\r\n   \t\treturn pontos[::-1]  # Reverter a lista de pontos para começar pelo último tubo \r\n\r\n# Função para obter o plano de referência da vista ativa\r\ndef obter_plano_de_referencia(view):\r\n    if view.SketchPlane is not None:\r\n        return view.SketchPlane.GetPlane()\r\n    else:\r\n        # Cria um plano na origem com a orientação da vista\r\n        origin = XYZ(0, 0, 0)\r\n        normal = view.ViewDirection\r\n        plane = Plane.CreateByNormalAndOrigin(normal, origin)\r\n        TransactionManager.Instance.EnsureInTransaction(doc)\r\n        sketchPlane = SketchPlane.Create(doc,plane)\r\n        view.SketchPlane = sketchPlane\r\n        TransactionManager.Instance.TransactionTaskDone()\r\n        return plane\r\n\r\n# Obter o ponto inicial do usuário\r\nview = doc.ActiveView\r\nplano_referencia = obter_plano_de_referencia(view)\r\nponto_inicial = uidoc.Selection.PickPoint(\"Selecione o ponto inicial para disposição das tags\")\r\n\r\n# Obter os elementos selecionados e filtrados\r\nselected_pipes = IN[0][0]\r\nlinked_instances = IN[0][1]\r\n\r\n# Calcular os pontos de inserção com base no ponto inicial, quantidade de tubos, disposição e orientação da vista\r\npontos_de_insercao = calcular_pontos_de_insercao(ponto_inicial, len(selected_pipes), disposicao_dos_pontos, espacamento_vertical_escala_base_cm, espacamento_horizontal_escala_base_cm, doc.ActiveView)\r\n\r\n# Criar tags para os tubos selecionados e armazenar as IDs das tags criadas\r\ncreated_tags = []\r\ntag_ids = []\r\nfor pipe, link_instance, insertion_point in zip(UnwrapElement(selected_pipes), UnwrapElement(linked_instances), pontos_de_insercao):\r\n    # Obter o nome do sistema do tubo para definir o tag_type_name\r\n    param_sistema = pipe.get_Parameter(BuiltInParameter.RBS_PIPING_SYSTEM_TYPE_PARAM)\r\n    if param_sistema:\r\n        tag_type_name = param_sistema.AsValueString().replace(\" \", \"\")\r\n    else:\r\n        tag_type_name = \"HID-ALIMENTAÇÃO\"  # Nome padrão caso o parâmetro não esteja presente \r\n    \r\n    tag, insertion_point = TagLinkedPipe(doc, pipe, link_instance, tag_type_name, insertion_point)\r\n    created_tags.append(tag)\r\n    tag_ids.append(tag.Id)\r\n    \r\n# Selecionar as tags criadas\r\nuidoc.Selection.SetElementIds(List[ElementId](tag_ids))    \r\n    \r\n# Saída do script\r\nOUT = created_tags\r\n",
       "Engine": "IronPython2",
       "EngineName": "IronPython2",
       "VariableInputPorts": true,
@@ -40,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
@@ -73,7 +73,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
@@ -93,7 +93,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Cria uma sequência de caracteres."
+      "Description": "Creates a string."
     }
   ],
   "Connectors": [
@@ -130,7 +130,7 @@
   ],
   "Author": "",
   "Linting": {
-    "activeLinter": "Nenhum",
+    "activeLinter": "None",
     "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
     "warningCount": 0,
     "errorCount": 0
@@ -146,7 +146,7 @@
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Visualização do plano de fundo",
+      "Name": "Background Preview",
       "EyeX": 50.062667846679688,
       "EyeY": 4391.13525390625,
       "EyeZ": -37.018901824951172,
@@ -166,8 +166,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 950.61015856205438,
-        "Y": -528.54850138942425
+        "X": 871.88239898981737,
+        "Y": -526.16414156136761
       },
       {
         "Name": "Obtém as prumadas e Links",
@@ -176,7 +176,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 637.3115234572897,
+        "X": 527.75474329211693,
         "Y": -528.94473188155769
       },
       {
@@ -209,7 +209,7 @@
         "Height": 191.0,
         "FontSize": 24.0,
         "InitialTop": -529.332522472753,
-        "InitialHeight": 162.0,
+        "InitialHeight": 153.38692018198162,
         "TextblockHeight": 49.0,
         "Background": "#FFFF931E"
       },
@@ -233,8 +233,8 @@
         "Background": "#FFC1D676"
       }
     ],
-    "X": 148.7507144169017,
-    "Y": 884.7902045177816,
-    "Zoom": 0.82313156043115143
+    "X": 153.08431667813966,
+    "Y": 983.2827949009752,
+    "Zoom": 1.1517728885497032
   }
 }
