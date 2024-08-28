@@ -2,7 +2,7 @@
   "Uuid": "ca9bf69e-6969-48b2-b9b2-2363d3cb36be",
   "IsCustomNode": false,
   "Description": "",
-  "Name": "Detalhe dos Ambientes 2D e 3D - Iron Python - 2",
+  "Name": "Detalhe dos Ambientes 2D e 3D-R00_script",
   "ElementResolver": {
     "ResolutionMap": {
       "Autodesk.BoundingBox": {
@@ -54,7 +54,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Obter a vista ativa para o documento\n\nDocument.ActiveView: View"
+      "Description": "Get the active view for the document\n\nDocument.ActiveView: View"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -74,7 +74,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Obter o documento atual\n\nDocument.Current: Document"
+      "Description": "Get the current document\n\nDocument.Current: Document"
     },
     {
       "ConcreteType": "CoreNodeModels.HigherOrder.ApplyFunction, CoreNodeModels",
@@ -113,7 +113,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Retorna o resultado de uma função com argumentos fornecidos. Por exemplo: argumentos de um ponto e vetor são aplicados a uma função de tradução retornando um ponto traduzido."
+      "Description": "Returns the result of a function with supplied arguments. Ex: arguments of a point and vector are applied to a translate function returning a translated point."
     },
     {
       "ConcreteType": "CoreNodeModels.HigherOrder.ComposeFunctions, CoreNodeModels",
@@ -152,7 +152,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Retorna uma única função de várias funções. Por exemplo: as funções módulo e divisão são compostas em uma única função para aplicar a uma lista."
+      "Description": "Returns a single function from multiple functions. Ex: the modulus and divide functions are composed into a single function to apply to a list."
     },
     {
       "ConcreteType": "CoreNodeModels.HigherOrder.ApplyFunction, CoreNodeModels",
@@ -191,7 +191,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Retorna o resultado de uma função com argumentos fornecidos. Por exemplo: argumentos de um ponto e vetor são aplicados a uma função de tradução retornando um ponto traduzido."
+      "Description": "Returns the result of a function with supplied arguments. Ex: arguments of a point and vector are applied to a translate function returning a translated point."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -202,7 +202,7 @@
         {
           "Id": "ce384214813c410b8e061c79b71c47f0",
           "Name": "list",
-          "Description": "lista a ser classificada\n\nvar[]..[]",
+          "Description": "list to be sorted\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": true,
@@ -211,7 +211,7 @@
         {
           "Id": "a9feb702603b4bd390eabedef20ab803",
           "Name": "keys",
-          "Description": "lista de chaves, as chaves devem ser classificáveis (por exemplo, números, strings)\n\nvar[]..[]",
+          "Description": "list of keys, keys have to be sortable (e.g. numbers,strings)\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": true,
@@ -222,7 +222,7 @@
         {
           "Id": "f988d26de2be43f9b59a52f74159cf1f",
           "Name": "sortedList",
-          "Description": "tipo: var[]..[]",
+          "Description": "type: var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -231,7 +231,7 @@
         {
           "Id": "ba78b42e91ee449b9bf2862f2fcfc3ce",
           "Name": "sortedKeys",
-          "Description": "tipo: var[]..[]",
+          "Description": "type: var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -239,7 +239,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Classificar a lista com base em suas chaves\n\nList.SortByKey (list: var[]..[], keys: var[]..[]): var[]..[]"
+      "Description": "Sort list based on its keys\n\nList.SortByKey (list: var[]..[], keys: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -269,7 +269,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Retorna o comprimento total do arco da curva\n\nCurve.Length: double"
+      "Description": "Returns the total arc length of the curve\n\nCurve.Length: double"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -280,7 +280,7 @@
         {
           "Id": "671d8e1c7c9f4752a1e7d99fd264caa0",
           "Name": "list",
-          "Description": "Lista da qual obter o último item\n\nvar[]..[]",
+          "Description": "List to get the last item of\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -291,7 +291,7 @@
         {
           "Id": "2b78624c35e3425b869007152c38912b",
           "Name": "item",
-          "Description": "Último item na lista",
+          "Description": "Last item in the list",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -299,14 +299,13 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Recupera o último item em uma lista.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\nimport math \r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nuidoc = uiapp.ActiveUIDocument\r\n\r\ndef toList(x):\r\n    if isinstance(x, list):\r\n        return x\r\n    else:\r\n        return [x]\r\n        \r\n# Função para obter o template de visualização pelo nome\r\ndef get_view_template_by_name(doc, template_name):\r\n    collector = FilteredElementCollector(doc).OfClass(View)\r\n    for view in collector:\r\n        if view.IsTemplate and view.Name == template_name:\r\n            return view.Id       \r\n\r\ntoggle = IN[0]\r\nviewNames = toList(IN[1])\r\nbbBoxes = toList(IN[2])\r\nheight = IN[3]\r\nnormals = IN[4]\r\nview_template = IN[5]\r\n\r\nif toggle:\r\n    # Obter o ViewFamilyType de 3DView\r\n    collector = FilteredElementCollector(doc).OfClass(ViewFamilyType)\r\n    for i in collector:\r\n        viewFamily = i.ViewFamily\r\n        if viewFamily == ViewFamily.ThreeDimensional:\r\n            viewFamilyType = i\r\n    \r\n    # Criar as vistas 3D a partir das BB e dos nomes\r\n    warning = []\r\n    newViews = []\r\n    for viewName, bbBox,normal in zip(viewNames, bbBoxes,normals):\r\n        bb = UnwrapElement(bbBox)\r\n        bbMax = bb.MaxPoint.ToRevitType()\r\n        bbMin = bb.MinPoint.ToRevitType()\r\n        newBB = BoundingBoxXYZ()\r\n        \r\n        bbMin_X = bbMin.X\r\n        bbMin_Y = bbMin.Y\r\n        bbMin_Z = bbMin.Z + UnitUtils.ConvertToInternalUnits(height[1], UnitTypeId.Centimeters) \r\n        newBBmin = XYZ(bbMin_X, bbMin_Y, bbMin_Z)\r\n        \r\n        bbMax_X = bbMax.X\r\n        bbMax_Y = bbMax.Y\r\n        bbMax_Z = bbMax.Z + UnitUtils.ConvertToInternalUnits(height[0], UnitTypeId.Centimeters)\r\n        newBBmax = XYZ(bbMax_X, bbMax_Y, bbMax_Z)\r\n        \r\n        newBB.Max = newBBmax\r\n        newBB.Min = newBBmin \r\n        \r\n        # Rotacionar a SectionBox para coincidir com o detalhe\r\n        norm = normal.ToRevitType()\r\n        boxNormal = newBB.Transform.BasisX.Normalize()\r\n        angle = norm.AngleTo(boxNormal)\r\n        axis = XYZ(0, 0, 1.0)\r\n        origin = XYZ(newBB.Min.X + (newBB.Max.X - newBB.Min.X) / 2, newBB.Min.Y + (newBB.Max.Y - newBB.Min.Y) / 2, 0.0)\r\n        \r\n        if norm.Y * boxNormal.X < 0:\r\n            rotate = Transform.CreateRotationAtPoint(axis, math.pi / 2 - angle, origin)\r\n        else:\r\n            rotate = Transform.CreateRotationAtPoint(axis, angle, origin)\r\n        \r\n        newBB.Transform = newBB.Transform.Multiply(rotate)\r\n        \r\n        try:\r\n            TransactionManager.Instance.EnsureInTransaction(doc)\r\n            newView = View3D.CreateIsometric(doc, viewFamilyType.Id)\r\n            newView.Name = viewName\r\n            newView.SetSectionBox(newBB)\r\n            newView.ViewTemplateId = get_view_template_by_name(doc,view_template)\r\n            TransactionManager.Instance.TransactionTaskDone()\r\n            newViews.append(newView)\r\n        \r\n        except Exception as ex:\r\n            warning.append(str(ex))\r\n            \r\n    if len(newViews) > 1:\r\n        newViews.sort(key=lambda v: v.get_Parameter(BuiltInParameter.VIEW_NAME).AsString())\r\n        \r\n        \r\n    OUT = newViews\r\n\r\nelse:\r\n    OUT = \"Toggle is off\"\r\n",
+      "Code": "import clr\r\nimport sys\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\n\r\nimport math \r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nuiapp = DocumentManager.Instance.CurrentUIApplication\r\napp = uiapp.Application\r\nuidoc = uiapp.ActiveUIDocument\r\n\r\ndef toList(x):\r\n    if isinstance(x, list):\r\n        return x\r\n    else:\r\n        return [x]\r\n        \r\n# Função para obter o template de visualização pelo nome\r\ndef get_view_template_by_name(doc, template_name):\r\n    collector = FilteredElementCollector(doc).OfClass(View)\r\n    for view in collector:\r\n        if view.IsTemplate and view.Name == template_name:\r\n            return view.Id       \r\n\r\ntoggle = IN[0]\r\nviewNames = toList(IN[1])\r\nbbBoxes = toList(IN[2])\r\nheight = IN[3]\r\nnormals = IN[4]\r\nview_template = IN[5]\r\n\r\nif toggle:\r\n    # Obter o ViewFamilyType de 3DView\r\n    collector = FilteredElementCollector(doc).OfClass(ViewFamilyType)\r\n    for i in collector:\r\n        viewFamily = i.ViewFamily\r\n        if viewFamily == ViewFamily.ThreeDimensional:\r\n            viewFamilyType = i\r\n    \r\n    # Criar as vistas 3D a partir das BB e dos nomes\r\n    warning = []\r\n    newViews = []\r\n    for viewName, bbBox,normal in zip(viewNames, bbBoxes,normals):\r\n        bb = UnwrapElement(bbBox)\r\n        bbMax = bb.MaxPoint.ToRevitType()\r\n        bbMin = bb.MinPoint.ToRevitType()\r\n        newBB = BoundingBoxXYZ()\r\n        \r\n        bbMin_X = bbMin.X\r\n        bbMin_Y = bbMin.Y\r\n        bbMin_Z = bbMin.Z + UnitUtils.ConvertToInternalUnits(height[1], UnitTypeId.Centimeters) \r\n        newBBmin = XYZ(bbMin_X, bbMin_Y, bbMin_Z)\r\n        \r\n        bbMax_X = bbMax.X\r\n        bbMax_Y = bbMax.Y\r\n        bbMax_Z = bbMax.Z + UnitUtils.ConvertToInternalUnits(height[0], UnitTypeId.Centimeters)\r\n        newBBmax = XYZ(bbMax_X, bbMax_Y, bbMax_Z)\r\n        \r\n        newBB.Max = newBBmax\r\n        newBB.Min = newBBmin \r\n        \r\n        # Rotacionar a SectionBox para coincidir com o detalhe\r\n        norm = normal.ToRevitType()\r\n        boxNormal = newBB.Transform.BasisX.Normalize()\r\n        angle = norm.AngleTo(boxNormal)\r\n        axis = XYZ(0, 0, 1.0)\r\n        origin = XYZ(newBB.Min.X + (newBB.Max.X - newBB.Min.X) / 2, newBB.Min.Y + (newBB.Max.Y - newBB.Min.Y) / 2, 0.0)\r\n        \r\n        if norm.Y * boxNormal.X < 0:\r\n            rotate = Transform.CreateRotationAtPoint(axis, math.pi / 2 - angle, origin)\r\n        else:\r\n            rotate = Transform.CreateRotationAtPoint(axis, angle, origin)\r\n        \r\n        newBB.Transform = newBB.Transform.Multiply(rotate)\r\n        \r\n        try:\r\n            TransactionManager.Instance.EnsureInTransaction(doc)\r\n            newView = View3D.CreateIsometric(doc, viewFamilyType.Id)\r\n            newView.Name = viewName\r\n            newView.SetSectionBox(newBB)\r\n            if view_template !=None: newView.ViewTemplateId = get_view_template_by_name(doc,view_template)\r\n            TransactionManager.Instance.TransactionTaskDone()\r\n            newViews.append(newView)\r\n        \r\n        except Exception as ex:\r\n            warning.append(str(ex))\r\n            \r\n    if len(newViews) > 1:\r\n        newViews.sort(key=lambda v: v.get_Parameter(BuiltInParameter.VIEW_NAME).AsString())\r\n        \r\n        \r\n    OUT = newViews\r\n\r\nelse:\r\n    OUT = \"Toggle is off\"\r\n",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "df1c14291dd447659af64dccfe07f7f9",
       "Inputs": [
@@ -377,18 +376,18 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
       "NodeType": "FunctionNode",
-      "FunctionSignature": "Autodesk.DesignScript.Geometry.PolyCurve.ByJoinedCurves@Autodesk.DesignScript.Geometry.Curve[],double,bool,double",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.PolyCurve.ByJoinedCurves@Autodesk.DesignScript.Geometry.Curve[],double",
       "Id": "8cda16dddc9440108b4c74be6c1937bb",
       "Inputs": [
         {
           "Id": "3aafa59bcf1c4b1b99657234e06f2ab6",
           "Name": "curves",
-          "Description": "Curvas a unir na PolyCurve\n\nCurve[]",
+          "Description": "Curves to join into polycurve\n\nCurve[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -397,25 +396,7 @@
         {
           "Id": "1652d83c3d874959b56935de50323c77",
           "Name": "joinTolerance",
-          "Description": "Tolerância para determinar o tamanho permitido da lacuna entre curvas a unir\n\ndouble\nValor padrão : 0.001",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "a99e718245c9433393449f14d1a346eb",
-          "Name": "trimCurves",
-          "Description": "bool\nValor padrão : false",
-          "UsingDefaultValue": true,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "7240897166b849bdbf9e4e9a2da6d97f",
-          "Name": "trimLength",
-          "Description": "double\nValor padrão : 0",
+          "Description": "Tolerance to determine size of gap allowed between curves to be joined\n\ndouble\nDefault value : 0.001",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -426,7 +407,7 @@
         {
           "Id": "60a9a88fd9714a9aac82e608edc8282c",
           "Name": "PolyCurve",
-          "Description": "PolyCurve criada usando curvas unidas",
+          "Description": "Polycurve created by joined curves",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -434,7 +415,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Crie a PolyCurve unindo curvas. Inverte a curva conforme necessário para a conectividade. Escolha uma tolerância de união preferencial entre as unidades 1e-6 e 1e-3.\n\nPolyCurve.ByJoinedCurves (curves: Curve[], joinTolerance: double = 0.001, trimCurves: bool = false, trimLength: double = 0): PolyCurve"
+      "Description": "Make PolyCurve by joining curves. Flips curve as needed for connectivity. Choose a preferred join tolerance between 1e-6 and 1e-3 units.\n\nPolyCurve.ByJoinedCurves (curves: Curve[], joinTolerance: double = 0.001): PolyCurve"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -464,7 +445,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Crie uma BoundingBox alinhada com o eixo em torno de geometria de entrada.\n\nBoundingBox.ByGeometry (geom: Geometry[]): BoundingBox"
+      "Description": "Create an axis-aligned BoundingBox around input Geometry.\n\nBoundingBox.ByGeometry (geom: Geometry[]): BoundingBox"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -484,7 +465,7 @@
         {
           "Id": "2f0730e11a0e4b85a7573f0cddee5c62",
           "Name": "param",
-          "Description": "O parâmetro no qual avaliar\n\ndouble\nValor padrão : 0",
+          "Description": "The parameter at which to evaluate\n\ndouble\nDefault value : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -495,7 +476,7 @@
         {
           "Id": "82250646dd1a42a2acdd85fea9ec0a6d",
           "Name": "Vector",
-          "Description": "Um vetor perpendicular à curva no parâmetro",
+          "Description": "A Vector perpendicular to the curve at param",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -503,7 +484,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Obter um vetor perpendicular à curva com um parâmetro especificado entre StartParameter() e EndParameter()\n\nCurve.NormalAtParameter (param: double = 0): Vector"
+      "Description": "Get a Vector perpendicular to the curve at a specified parameter between StartParameter() and EndParameter()\n\nCurve.NormalAtParameter (param: double = 0): Vector"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
@@ -515,7 +496,7 @@
         {
           "Id": "82b94c308ed14c77bc6c2c00b3537b5c",
           "Name": "",
-          "Description": "Valor da expressão na linha 1",
+          "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -523,14 +504,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Permite que o código DesignScript seja criado diretamente"
+      "Description": "Allows for DesignScript code to be authored directly"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "#! python3\r\n\r\nimport clr\r\nclr.AddReference('System.Windows.Forms')\r\nclr.AddReference('System.Drawing')\r\n\r\nfrom System.Windows.Forms import Application, Form, Label, ComboBox, Button, FormStartPosition, ComboBoxStyle\r\nfrom System.Drawing import Point, Size, Color\r\n\r\nclass MyForm(Form):\r\n    def __init__(self):\r\n        self.Text = \"Configuração de Detalhes\"\r\n        self.Size = Size(280, 160)\r\n        \r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.MaximizeBox = False\r\n        self.MinimizeBox = False\r\n        self.ShowIcon = False\r\n\r\n        # Configuração do tema Dark\r\n        self.BackColor = Color.FromArgb(45, 45, 48)\r\n        self.ForeColor = Color.White\r\n\r\n        # Label para pergunta\r\n        self.label_question = Label()\r\n        self.label_question.Text = \"Criar vários detalhes?\"\r\n        self.label_question.Size = Size(200, 30) \r\n        self.label_question.Location = Point((self.ClientSize.Width - self.label_question.Width) // 2, 20)\r\n        self.Controls.Add(self.label_question)\r\n\r\n        # ComboBox para resposta\r\n        self.combobox_details = ComboBox()\r\n        self.combobox_details.Items.Add(\"SIM\")\r\n        self.combobox_details.Items.Add(\"NÃO\")\r\n        self.combobox_details.SelectedIndex = 0\r\n        self.combobox_details.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.combobox_details.Size = Size(100, 30)\r\n        self.combobox_details.Location = Point((self.ClientSize.Width - self.combobox_details.Width) // 2, 50)\r\n        self.Controls.Add(self.combobox_details)\r\n\r\n        # Botão OK\r\n        self.btn_ok = Button()\r\n        self.btn_ok.Text = \"OK\"\r\n        self.btn_ok.Location = Point((self.ClientSize.Width - self.btn_ok.Width) // 2, 90)\r\n        self.btn_ok.Click += self.on_ok\r\n        self.Controls.Add(self.btn_ok)\r\n\r\n    def on_ok(self, sender, event):\r\n        global create_multiple_details\r\n        create_multiple_details = self.combobox_details.SelectedItem\r\n        self.Close()\r\n\r\nform = MyForm()\r\nApplication.Run(form)\r\nOUT = create_multiple_details\r\n",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "9e61997dd865437cae19beecfdbf0fbe",
       "Inputs": [
@@ -556,14 +536,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('System.Windows.Forms')\r\nclr.AddReference('System.Drawing')\r\n\r\nfrom System.Windows.Forms import Application, Form, Label, TextBox, Button, ComboBox, ComboBoxStyle, CheckBox, FormStartPosition, KeyPressEventArgs\r\nfrom System.Drawing import Point, Size, Color\r\n\r\nfrom System.Collections.Generic import List\r\nfrom System import Array\r\n\r\n# Referências necessárias para a API do Revit\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitServices')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.UI import TaskDialog\r\nfrom Autodesk.Revit.DB import BuiltInCategory,ElementId, UnitUtils, UnitTypeId, PlanViewPlane, FilteredElementCollector, View, ViewType\r\nfrom Autodesk.Revit.UI.Selection import ObjectType\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom System.Collections.Generic import List\r\n\r\n# Obtendo o documento ativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Parâmetro de entrada\r\nvarios_detalhes = IN[0]\r\nparametro = IN[1] \r\n\r\nclass MyForm1(Form):\r\n    def __init__(self): \r\n        self.Text = 'Criar Detalhes 2D e 3D'\r\n        self.Size = Size(400, 440)\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.BackColor = Color.FromArgb(45, 45, 48)  # Cor de fundo escura\r\n        self.ShowIcon = False  # Esconder o ícone \r\n        \r\n        self.dropdown_label = Label()\r\n        self.dropdown_label.Text = 'Duplicar como:'\r\n        self.dropdown_label.Location = Point(10, 20)\r\n        self.dropdown_label.Size = Size(150, 20) \r\n        self.dropdown_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.dropdown_label)\r\n        \r\n        self.dropdown = ComboBox()\r\n        self.dropdown.Items.AddRange(Array[str](['WithDetailing', 'Duplicate', 'AsDependent']))\r\n        self.dropdown.Location = Point(160, 20)\r\n        self.dropdown.Size = Size(200, 20)\r\n        self.dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.dropdown.SelectedItem = 'Duplicate'  # Seleção padrão\r\n        self.Controls.Add(self.dropdown)\r\n        \r\n        # Adicionar DropDownList para templates de plantas de piso\r\n        self.floor_template_label = Label()\r\n        self.floor_template_label.Text = 'Template Planta de Piso:'\r\n        self.floor_template_label.Location = Point(10, 60)\r\n        self.floor_template_label.Size = Size(150, 20)\r\n        self.floor_template_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.floor_template_label)\r\n\r\n        self.floor_template_dropdown = ComboBox()\r\n        self.floor_template_dropdown.Location = Point(160, 60)\r\n        self.floor_template_dropdown.Size = Size(200, 20)\r\n        self.floor_template_dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.floor_template_dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.floor_template_dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.floor_template_dropdown)\r\n        \r\n        # Adicionar DropDownList para templates de vistas 3D\r\n        self.threeD_template_label = Label()\r\n        self.threeD_template_label.Text = 'Template Vista 3D:' \r\n        self.threeD_template_label.Location = Point(10, 100)\r\n        self.threeD_template_label.Size = Size(150, 20)\r\n        self.threeD_template_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.threeD_template_label)\r\n\r\n        self.threeD_template_dropdown = ComboBox()\r\n        self.threeD_template_dropdown.Location = Point(160, 100)\r\n        self.threeD_template_dropdown.Size = Size(200, 20)\r\n        self.threeD_template_dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.threeD_template_dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.threeD_template_dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.threeD_template_dropdown)\r\n\r\n        # Restante do código...\r\n        self.checkbox_label = Label()\r\n        self.checkbox_label.Text = 'Criar Planta de Piso?:'\r\n        self.checkbox_label.Location = Point(10, 140)\r\n        self.checkbox_label.Size = Size(120, 20)\r\n        self.checkbox_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.checkbox_label)\r\n        \r\n        self.checkbox = CheckBox()\r\n        self.checkbox.Text = 'Sim'\r\n        self.checkbox.Location = Point(160, 140)\r\n        self.checkbox.Size = Size(150, 20)\r\n        self.checkbox.BackColor = Color.FromArgb(45, 45, 48)  # Mesma cor do fundo do formulário\r\n        self.checkbox.ForeColor = Color.White  # Cor do texto branca\r\n        self.checkbox.Checked = True  # Caixa marcada por padrão\r\n        self.Controls.Add(self.checkbox)\r\n        \r\n        self.checkbox3d_label = Label()\r\n        self.checkbox3d_label.Text = 'Criar Vista 3D?:'\r\n        self.checkbox3d_label.Location = Point(10, 180)\r\n        self.checkbox3d_label.Size = Size(100, 20)\r\n        self.checkbox3d_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.checkbox3d_label)\r\n        \r\n        self.checkbox3d = CheckBox()\r\n        self.checkbox3d.Text = 'Sim'\r\n        self.checkbox3d.Location = Point(160, 180)\r\n        self.checkbox3d.Size = Size(150, 20)\r\n        self.checkbox3d.BackColor = Color.FromArgb(45, 45, 48)  # Mesma cor do fundo do formulário\r\n        self.checkbox3d.ForeColor = Color.White  # Cor do texto branca\r\n        self.checkbox3d.Checked = True  # Caixa marcada por padrão\r\n        self.Controls.Add(self.checkbox3d)\r\n        \r\n        self.pick_button = Button()\r\n        self.pick_button.Text = 'Selecionar regiões'\r\n        self.pick_button.Location = Point(120, 220)\r\n        self.pick_button.Size = Size(160, 30)  # Tamanho aumentado para caber o texto\r\n        self.pick_button.BackColor = Color.Red  # Fundo vermelho do botão\r\n        self.pick_button.ForeColor = Color.White  # Cor do texto branca\r\n        self.pick_button.Click += self.pick_button_click\r\n        self.Controls.Add(self.pick_button)\r\n\r\n        self.button = Button()\r\n        self.button.Text = 'OK'\r\n        self.button.Location = Point(160, 260)\r\n        self.button.Size = Size(80, 30)  # Tamanho aumentado para caber o texto\r\n        self.button.BackColor = Color.FromArgb(51, 153, 255)  # Fundo azul do botão\r\n        self.button.ForeColor = Color.White  # Cor do texto branca\r\n        self.button.Click += self.button_click\r\n        self.Controls.Add(self.button)\r\n        \r\n        # Informação da empresa\r\n        self.company_info = Label()\r\n        self.company_info.Text = 'Versão 1.0\\nBIM Coder | Première Engenharia\\nBy: Fellipe Caetano\\nIG: @bimcoder YT: _bimcoder\\ncontato@bimcoder.net'  \r\n        self.company_info.Location = Point(10, 310)\r\n        self.company_info.Size = Size(280, 80)\r\n        self.company_info.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.company_info)\r\n        \r\n        # Preencher os dropdowns com os templates de vistas\r\n        self.populate_templates()\r\n    \r\n    def populate_templates(self):\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        \r\n        # Entradas - Nomes dos templates prioritários\r\n        nome_template_floor = IN[2]\r\n        nome_template_threeD = IN[3]\r\n        \r\n        floor_plan_templates, threeD_templates = get_view_templates(doc, nome_template_floor, nome_template_threeD)\r\n        \r\n        self.floor_template_dropdown.Items.AddRange(Array[str](floor_plan_templates))\r\n        self.floor_template_dropdown.SelectedIndex = 0\r\n        \r\n        self.threeD_template_dropdown.Items.AddRange(Array[str](threeD_templates))\r\n        self.threeD_template_dropdown.SelectedIndex = 0\r\n    \r\n    def height_textbox_keypress(self, sender, event):\r\n        if not event.KeyChar.isdigit() and event.KeyChar != '\\b':\r\n            event.Handled = True\r\n    \r\n    def button_click(self, sender, event):\r\n        global detail_values\r\n        global duplicate_option\r\n        global is_floor_plan\r\n        global is_3d_view\r\n        global height_3d\r\n        global selected_elements\r\n        global selected_floor_template\r\n        global selected_3D_template\r\n        \r\n        detail_values = [elem.LookupParameter(parametro).AsString() for elem in selected_elements]\r\n        duplicate_option = self.dropdown.SelectedItem\r\n        is_floor_plan = self.checkbox.Checked\r\n        is_3d_view = self.checkbox3d.Checked\r\n        selected_floor_template = self.floor_template_dropdown.SelectedItem\r\n        selected_3D_template = self.threeD_template_dropdown.SelectedItem\r\n        try:\r\n            height_3d = GetTopBottomViewRange(doc.ActiveView)\r\n        except ValueError:\r\n            height_3d = None\r\n        self.Close()\r\n\r\n    def pick_button_click(self, sender, event):\r\n        self.Hide()\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n        global selected_elements\r\n        try:\r\n            references = uidoc.Selection.PickObjects(ObjectType.Element, \"Selecione elementos\")\r\n            selected_elements = []\r\n            missing_name_elements = []\r\n            for reference in references:\r\n                element = doc.GetElement(reference)\r\n                \r\n                if element.Category.Id.IntegerValue == int(BuiltInCategory.OST_DetailComponents):\r\n                    param_value = element.LookupParameter(parametro)\r\n                    if param_value:\r\n                        param_value = param_value.AsString()\r\n                        if param_value and param_value != \"\":\r\n                            selected_elements.append(element)\r\n                        else:\r\n                            missing_name_elements.append(element)\r\n                    else:\r\n                        missing_name_elements.append(element)\r\n            \r\n            if missing_name_elements:\r\n                missing_ids = List[ElementId]([elem.Id for elem in missing_name_elements])\r\n                uidoc.Selection.SetElementIds(missing_ids)\r\n                TaskDialog.Show(\"Atenção\", \"As Regiões que estão selecionadas não possuem nome definido! Você pode continuar a operação ou cancelar e tentar novamente\")\r\n                \r\n            self.pick_button.BackColor = Color.Green  # Mudar a cor do botão para verde\r\n            self.pick_button.Text = 'Regiões selecionadas!' \r\n        except Exception as e:\r\n            selected_elements = []\r\n            TaskDialog.Show('Erro', str(e))\r\n        self.Show()\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.BringToFront()\r\n\r\n        \r\nclass MyForm2(Form):\r\n    def __init__(self): \r\n        self.Text = 'Criar Detalhes 2D e 3D'\r\n        self.Size = Size(400, 480)\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.BackColor = Color.FromArgb(45, 45, 48)  # Cor de fundo escura\r\n        self.ShowIcon = False  # Esconder o ícone\r\n        \r\n        # Adicionar campo de texto para \"Nome do detalhe\"\r\n        self.name_label = Label()\r\n        self.name_label.Text = 'Nome do detalhe:'\r\n        self.name_label.Location = Point(10, 20)\r\n        self.name_label.Size = Size(150, 20)\r\n        self.name_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.name_label)\r\n        \r\n        self.name_textbox = TextBox()\r\n        self.name_textbox.Location = Point(160, 20)\r\n        self.name_textbox.Size = Size(200, 20)\r\n        self.Controls.Add(self.name_textbox)\r\n\r\n        self.dropdown_label = Label()\r\n        self.dropdown_label.Text = 'Duplicar como:'\r\n        self.dropdown_label.Location = Point(10, 60)\r\n        self.dropdown_label.Size = Size(150, 20)\r\n        self.dropdown_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.dropdown_label)\r\n        \r\n        self.dropdown = ComboBox()\r\n        self.dropdown.Items.AddRange(Array[str](['WithDetailing', 'Duplicate', 'AsDependent']))\r\n        self.dropdown.Location = Point(160, 60)\r\n        self.dropdown.Size = Size(200, 20)\r\n        self.Controls.Add(self.dropdown)\r\n        self.dropdown.Location = Point(160, 60)\r\n        self.dropdown.Size = Size(200, 20)\r\n        self.dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.dropdown.SelectedItem = 'Duplicate'  # Seleção padrão\r\n        self.Controls.Add(self.dropdown)\r\n        \r\n        # Adicionar DropDownList para templates de plantas de piso\r\n        self.floor_template_label = Label()\r\n        self.floor_template_label.Text = 'Template Planta de Piso:'\r\n        self.floor_template_label.Location = Point(10, 100)\r\n        self.floor_template_label.Size = Size(150, 20)\r\n        self.floor_template_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.floor_template_label)\r\n\r\n        self.floor_template_dropdown = ComboBox()\r\n        self.floor_template_dropdown.Location = Point(160, 100)\r\n        self.floor_template_dropdown.Size = Size(200, 20)\r\n        self.floor_template_dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.floor_template_dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.floor_template_dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.floor_template_dropdown)\r\n        \r\n        # Adicionar DropDownList para templates de vistas 3D\r\n        self.threeD_template_label = Label()\r\n        self.threeD_template_label.Text = 'Template Vista 3D:'\r\n        self.threeD_template_label.Location = Point(10, 140)\r\n        self.threeD_template_label.Size = Size(150, 20)\r\n        self.threeD_template_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.threeD_template_label)\r\n\r\n        self.threeD_template_dropdown = ComboBox()\r\n        self.threeD_template_dropdown.Location = Point(160, 140)\r\n        self.threeD_template_dropdown.Size = Size(200, 20)\r\n        self.threeD_template_dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.threeD_template_dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.threeD_template_dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.threeD_template_dropdown)\r\n\r\n        # Restante do código...\r\n        self.checkbox_label = Label()\r\n        self.checkbox_label.Text = 'Criar Planta de Piso?:'\r\n        self.checkbox_label.Location = Point(10, 180)\r\n        self.checkbox_label.Size = Size(120, 20)\r\n        self.checkbox_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.checkbox_label)\r\n        \r\n        self.checkbox = CheckBox()\r\n        self.checkbox.Text = 'Sim'\r\n        self.checkbox.Location = Point(160, 180)\r\n        self.checkbox.Size = Size(150, 20)\r\n        self.checkbox.BackColor = Color.FromArgb(45, 45, 48)  # Mesma cor do fundo do formulário\r\n        self.checkbox.ForeColor = Color.White  # Cor do texto branca\r\n        self.checkbox.Checked = True  # Caixa marcada por padrão\r\n        self.Controls.Add(self.checkbox)\r\n        \r\n        self.checkbox3d_label = Label()\r\n        self.checkbox3d_label.Text = 'Criar Vista 3D?:'\r\n        self.checkbox3d_label.Location = Point(10, 220)\r\n        self.checkbox3d_label.Size = Size(100, 20)\r\n        self.checkbox3d_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.checkbox3d_label)\r\n        \r\n        self.checkbox3d = CheckBox()\r\n        self.checkbox3d.Text = 'Sim'\r\n        self.checkbox3d.Location = Point(160, 220)\r\n        self.checkbox3d.Size = Size(150, 20)\r\n        self.checkbox3d.BackColor = Color.FromArgb(45, 45, 48)  # Mesma cor do fundo do formulário\r\n        self.checkbox3d.ForeColor = Color.White  # Cor do texto branca\r\n        self.checkbox3d.Checked = True  # Caixa marcada por padrão\r\n        self.Controls.Add(self.checkbox3d)\r\n        \r\n        self.pick_button = Button()\r\n        self.pick_button.Text = 'Selecionar região'\r\n        self.pick_button.Location = Point(120, 260)\r\n        self.pick_button.Size = Size(160, 30)  # Tamanho aumentado para caber o texto\r\n        self.pick_button.BackColor = Color.Red  # Fundo vermelho do botão\r\n        self.pick_button.ForeColor = Color.White  # Cor do texto branca\r\n        self.pick_button.Click += self.pick_button_click\r\n        self.Controls.Add(self.pick_button)\r\n\r\n        self.button = Button()\r\n        self.button.Text = 'OK'\r\n        self.button.Location = Point(160, 300)\r\n        self.button.Size = Size(80, 30)  # Tamanho aumentado para caber o texto\r\n        self.button.BackColor = Color.FromArgb(51, 153, 255)  # Fundo azul do botão\r\n        self.button.ForeColor = Color.White  # Cor do texto branca\r\n        self.button.Click += self.button_click\r\n        self.Controls.Add(self.button)\r\n        \r\n        # Informação da empresa\r\n        self.company_info = Label()\r\n        self.company_info.Text = 'Versão 1.0\\nBIM Coder | Première Engenharia\\nBy: Fellipe Caetano\\nIG: @bimcoder YT: _bimcoder\\ncontato@bimcoder.net'  \r\n        self.company_info.Location = Point(10, 350)\r\n        self.company_info.Size = Size(380, 80)\r\n        self.company_info.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.company_info)\r\n        \r\n        # Preencher os dropdowns com os templates de vistas\r\n        self.populate_templates()\r\n    \r\n    def populate_templates(self):\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        \r\n        # Entradas - Nomes dos templates prioritários\r\n        nome_template_floor = IN[2]\r\n        nome_template_threeD = IN[3]\r\n        \r\n        floor_plan_templates, threeD_templates = get_view_templates(doc, nome_template_floor, nome_template_threeD)\r\n        \r\n        self.floor_template_dropdown.Items.AddRange(Array[str](floor_plan_templates))\r\n        self.floor_template_dropdown.SelectedIndex = 0\r\n        \r\n        self.threeD_template_dropdown.Items.AddRange(Array[str](threeD_templates))\r\n        self.threeD_template_dropdown.SelectedIndex = 0\r\n    \r\n    def height_textbox_keypress(self, sender, event):\r\n        if not event.KeyChar.isdigit() and event.KeyChar != '\\b':\r\n            event.Handled = True\r\n    \r\n    def button_click(self, sender, event):\r\n        global detail_values\r\n        global duplicate_option\r\n        global is_floor_plan\r\n        global is_3d_view\r\n        global height_3d\r\n        global selected_elements\r\n        global selected_floor_template\r\n        global selected_3D_template\r\n        global detail_name\r\n        \r\n        detail_name = self.name_textbox.Text\r\n        detail_values = [elem.LookupParameter(parametro).AsString() for elem in selected_elements]\r\n        duplicate_option = self.dropdown.SelectedItem\r\n        is_floor_plan = self.checkbox.Checked\r\n        is_3d_view = self.checkbox3d.Checked\r\n        selected_floor_template = self.floor_template_dropdown.SelectedItem\r\n        selected_3D_template = self.threeD_template_dropdown.SelectedItem\r\n        try:\r\n            height_3d = GetTopBottomViewRange(doc.ActiveView)\r\n        except ValueError:\r\n            height_3d = None\r\n        self.Close()\r\n\r\n    def pick_button_click(self, sender, event):\r\n        self.Hide()\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n        global selected_elements\r\n        try:\r\n            reference = uidoc.Selection.PickObject(ObjectType.Element, \"Selecione um elemento\")\r\n            selected_elements = []\r\n            missing_name_elements = []\r\n            element = doc.GetElement(reference)\r\n                \r\n            if element.Category.Id.IntegerValue == int(BuiltInCategory.OST_DetailComponents):\r\n                selected_elements.append(element)\r\n            else:\r\n                TaskDialog.Show(\"Atenção\",\"Por favor, selecione uma Região!\")           \r\n           \r\n                \r\n            self.pick_button.BackColor = Color.Green  # Mudar a cor do botão para verde\r\n            self.pick_button.Text = 'Região selecionada!' \r\n        except Exception as e:\r\n            selected_elements = []\r\n            TaskDialog.Show('Erro', str(e))\r\n        self.Show()\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.BringToFront()\r\n\r\n\r\n\r\ndef GetTopBottomViewRange(view):\r\n    top = UnitUtils.ConvertFromInternalUnits(view.GetViewRange().GetOffset(PlanViewPlane.TopClipPlane),UnitTypeId.Centimeters)\r\n    \r\n    bottom = UnitUtils.ConvertFromInternalUnits(view.GetViewRange().GetOffset(PlanViewPlane.BottomClipPlane),UnitTypeId.Centimeters)\r\n    \r\n    return top, bottom\r\n    \r\ndef get_view_templates(doc, nome_template_floor, nome_template_threeD):\r\n    collector = FilteredElementCollector(doc).OfClass(View)  \r\n    # Filtrar templates de planta de piso e 3D\r\n    floor_plan_templates = [v for v in collector if v.IsTemplate and v.ViewType == ViewType.FloorPlan]\r\n    threeD_templates = [v for v in collector if v.IsTemplate and v.ViewType == ViewType.ThreeD]\r\n    \r\n    # Ordenar as listas colocando os templates com os nomes especificados na primeira posição\r\n    floor_plan_templates_sorted = sorted(floor_plan_templates, key=lambda x: x.Name != nome_template_floor)\r\n    threeD_templates_sorted = sorted(threeD_templates, key=lambda x: x.Name != nome_template_threeD)\r\n    \r\n    return [e.Name for e in floor_plan_templates_sorted], [e.Name for e in threeD_templates_sorted]\r\n\r\n\r\n# Inicializar e executar o formulário\r\nif varios_detalhes==\"SIM\":\r\n    form = MyForm1()\r\n    Application.Run(form)  \r\n    OUT = (detail_values, duplicate_option, is_floor_plan, is_3d_view, height_3d,  selected_elements, selected_floor_template,selected_3D_template )\r\nelse:\r\n    form = MyForm2()\r\n    Application.Run(form)\r\n    \r\n    OUT = (detail_name, duplicate_option, is_floor_plan, is_3d_view, height_3d, selected_elements,selected_floor_template,selected_3D_template )\r\n\r\n\r\n",
+      "Code": "import clr\r\nclr.AddReference('System.Windows.Forms')\r\nclr.AddReference('System.Drawing')\r\n\r\nfrom System.Windows.Forms import Application, Form, Label, TextBox, Button, ComboBox, ComboBoxStyle, CheckBox, FormStartPosition, KeyPressEventArgs\r\nfrom System.Drawing import Point, Size, Color\r\n\r\nfrom System.Collections.Generic import List\r\nfrom System import Array\r\n\r\n# Referências necessárias para a API do Revit\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitServices')\r\nclr.AddReference('RevitAPIUI')\r\nimport Autodesk \r\nfrom Autodesk.Revit.UI import TaskDialog\r\nfrom Autodesk.Revit.DB import BuiltInCategory,ElementId, UnitUtils, UnitTypeId, PlanViewPlane, FilteredElementCollector, View, ViewType\r\nfrom Autodesk.Revit.UI.Selection import ObjectType\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom System.Collections.Generic import List\r\n\r\n# Obtendo o documento ativo\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Parâmetro de entrada\r\nvarios_detalhes = IN[0]\r\nparametro = IN[1] \r\n\r\nclass MyForm1(Form):\r\n    def __init__(self): \r\n        self.Text = 'Criar Detalhes 2D e 3D'\r\n        self.Size = Size(400, 440)\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.BackColor = Color.FromArgb(45, 45, 48)  # Cor de fundo escura\r\n        self.ShowIcon = False  # Esconder o ícone \r\n        \r\n        self.dropdown_label = Label()\r\n        self.dropdown_label.Text = 'Duplicar como:'\r\n        self.dropdown_label.Location = Point(10, 20)\r\n        self.dropdown_label.Size = Size(150, 20) \r\n        self.dropdown_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.dropdown_label)\r\n        \r\n        self.dropdown = ComboBox()\r\n        self.dropdown.Items.AddRange(Array[str](['WithDetailing', 'Duplicate', 'AsDependent']))\r\n        self.dropdown.Location = Point(160, 20)\r\n        self.dropdown.Size = Size(200, 20)\r\n        self.dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.dropdown.SelectedItem = 'Duplicate'  # Seleção padrão\r\n        self.Controls.Add(self.dropdown)\r\n        \r\n        # Adicionar DropDownList para templates de plantas de piso\r\n        self.floor_template_label = Label()\r\n        self.floor_template_label.Text = 'Template Planta de Piso:'\r\n        self.floor_template_label.Location = Point(10, 60)\r\n        self.floor_template_label.Size = Size(150, 20)\r\n        self.floor_template_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.floor_template_label)\r\n\r\n        self.floor_template_dropdown = ComboBox()\r\n        self.floor_template_dropdown.Location = Point(160, 60)\r\n        self.floor_template_dropdown.Size = Size(200, 20)\r\n        self.floor_template_dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.floor_template_dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.floor_template_dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.floor_template_dropdown)\r\n        \r\n        # Adicionar DropDownList para templates de vistas 3D\r\n        self.threeD_template_label = Label()\r\n        self.threeD_template_label.Text = 'Template Vista 3D:' \r\n        self.threeD_template_label.Location = Point(10, 100)\r\n        self.threeD_template_label.Size = Size(150, 20)\r\n        self.threeD_template_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.threeD_template_label)\r\n\r\n        self.threeD_template_dropdown = ComboBox()\r\n        self.threeD_template_dropdown.Location = Point(160, 100)\r\n        self.threeD_template_dropdown.Size = Size(200, 20)\r\n        self.threeD_template_dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.threeD_template_dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.threeD_template_dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.threeD_template_dropdown)\r\n\r\n        # Restante do código...\r\n        self.checkbox_label = Label()\r\n        self.checkbox_label.Text = 'Criar Planta de Piso?:'\r\n        self.checkbox_label.Location = Point(10, 140)\r\n        self.checkbox_label.Size = Size(120, 20)\r\n        self.checkbox_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.checkbox_label)\r\n        \r\n        self.checkbox = CheckBox()\r\n        self.checkbox.Text = 'Sim'\r\n        self.checkbox.Location = Point(160, 140)\r\n        self.checkbox.Size = Size(150, 20)\r\n        self.checkbox.BackColor = Color.FromArgb(45, 45, 48)  # Mesma cor do fundo do formulário\r\n        self.checkbox.ForeColor = Color.White  # Cor do texto branca\r\n        self.checkbox.Checked = True  # Caixa marcada por padrão\r\n        self.Controls.Add(self.checkbox)\r\n        \r\n        self.checkbox3d_label = Label()\r\n        self.checkbox3d_label.Text = 'Criar Vista 3D?:'\r\n        self.checkbox3d_label.Location = Point(10, 180)\r\n        self.checkbox3d_label.Size = Size(100, 20)\r\n        self.checkbox3d_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.checkbox3d_label)\r\n        \r\n        self.checkbox3d = CheckBox()\r\n        self.checkbox3d.Text = 'Sim'\r\n        self.checkbox3d.Location = Point(160, 180)\r\n        self.checkbox3d.Size = Size(150, 20)\r\n        self.checkbox3d.BackColor = Color.FromArgb(45, 45, 48)  # Mesma cor do fundo do formulário\r\n        self.checkbox3d.ForeColor = Color.White  # Cor do texto branca\r\n        self.checkbox3d.Checked = True  # Caixa marcada por padrão\r\n        self.Controls.Add(self.checkbox3d)\r\n        \r\n        self.pick_button = Button()\r\n        self.pick_button.Text = 'Selecionar regiões'\r\n        self.pick_button.Location = Point(120, 220)\r\n        self.pick_button.Size = Size(160, 30)  # Tamanho aumentado para caber o texto\r\n        self.pick_button.BackColor = Color.Red  # Fundo vermelho do botão\r\n        self.pick_button.ForeColor = Color.White  # Cor do texto branca\r\n        self.pick_button.Click += self.pick_button_click\r\n        self.Controls.Add(self.pick_button)\r\n\r\n        self.button = Button()\r\n        self.button.Text = 'OK'\r\n        self.button.Location = Point(160, 260)\r\n        self.button.Size = Size(80, 30)  # Tamanho aumentado para caber o texto\r\n        self.button.BackColor = Color.FromArgb(51, 153, 255)  # Fundo azul do botão\r\n        self.button.ForeColor = Color.White  # Cor do texto branca\r\n        self.button.Click += self.button_click\r\n        self.Controls.Add(self.button)\r\n        \r\n        # Informação da empresa\r\n        self.company_info = Label()\r\n        self.company_info.Text = 'Versão 1.0\\nBIM Coder | Première Engenharia\\nBy: Fellipe Caetano\\nIG: @bimcoder YT: _bimcoder\\ncontato@bimcoder.net'  \r\n        self.company_info.Location = Point(10, 310)\r\n        self.company_info.Size = Size(280, 80)\r\n        self.company_info.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.company_info)\r\n        \r\n        # Preencher os dropdowns com os templates de vistas\r\n        self.populate_templates()\r\n    \r\n    def populate_templates(self):\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        \r\n        # Entradas - Nomes dos templates prioritários\r\n        nome_template_floor = IN[2]\r\n        nome_template_threeD = IN[3]\r\n        \r\n        floor_plan_templates, threeD_templates = get_view_templates(doc, nome_template_floor, nome_template_threeD)\r\n        \r\n        self.floor_template_dropdown.Items.AddRange(Array[str](floor_plan_templates))\r\n        try: self.floor_template_dropdown.SelectedIndex = 0\r\n        except: pass\r\n        \r\n        self.threeD_template_dropdown.Items.AddRange(Array[str](threeD_templates))\r\n        try: self.threeD_template_dropdown.SelectedIndex = 0\r\n        except: pass\r\n    \r\n    def height_textbox_keypress(self, sender, event):\r\n        if not event.KeyChar.isdigit() and event.KeyChar != '\\b':\r\n            event.Handled = True\r\n    \r\n    def button_click(self, sender, event):\r\n        global detail_values\r\n        global duplicate_option\r\n        global is_floor_plan\r\n        global is_3d_view\r\n        global height_3d\r\n        global selected_elements\r\n        global selected_floor_template\r\n        global selected_3D_template\r\n        \r\n        detail_values = [elem.LookupParameter(parametro).AsString() for elem in selected_elements]\r\n        duplicate_option = self.dropdown.SelectedItem\r\n        is_floor_plan = self.checkbox.Checked\r\n        is_3d_view = self.checkbox3d.Checked\r\n        selected_floor_template = self.floor_template_dropdown.SelectedItem\r\n        selected_3D_template = self.threeD_template_dropdown.SelectedItem\r\n        try:\r\n            height_3d = GetTopBottomViewRange(doc.ActiveView)\r\n        except ValueError:\r\n            height_3d = None\r\n        self.Close()\r\n\r\n    def pick_button_click(self, sender, event):\r\n        self.Hide()\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n        global selected_elements\r\n        try:\r\n            references = uidoc.Selection.PickObjects(ObjectType.Element, \"Selecione elementos\")\r\n            selected_elements = []\r\n            missing_name_elements = []\r\n            for reference in references:\r\n                element = doc.GetElement(reference)\r\n                \r\n                if element.Category.Id.IntegerValue == int(BuiltInCategory.OST_DetailComponents):\r\n                    param_value = element.LookupParameter(parametro)\r\n                    if param_value:\r\n                        param_value = param_value.AsString()\r\n                        if param_value and param_value != \"\":\r\n                            selected_elements.append(element)\r\n                        else:\r\n                            missing_name_elements.append(element)\r\n                    else:\r\n                        missing_name_elements.append(element)\r\n            \r\n            if missing_name_elements:\r\n                missing_ids = List[ElementId]([elem.Id for elem in missing_name_elements])\r\n                uidoc.Selection.SetElementIds(missing_ids)\r\n                TaskDialog.Show(\"Atenção\", \"As Regiões que estão selecionadas não possuem nome definido! Você pode continuar a operação ou cancelar e tentar novamente\")\r\n                \r\n            self.pick_button.BackColor = Color.Green  # Mudar a cor do botão para verde\r\n            self.pick_button.Text = 'Regiões selecionadas!' \r\n        except Exception as e:\r\n            selected_elements = []\r\n            TaskDialog.Show('Erro', str(e))\r\n        self.Show()\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.BringToFront()\r\n\r\n        \r\nclass MyForm2(Form):\r\n    def __init__(self): \r\n        self.Text = 'Criar Detalhes 2D e 3D'\r\n        self.Size = Size(400, 480)\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.BackColor = Color.FromArgb(45, 45, 48)  # Cor de fundo escura\r\n        self.ShowIcon = False  # Esconder o ícone\r\n        \r\n        # Adicionar campo de texto para \"Nome do detalhe\"\r\n        self.name_label = Label()\r\n        self.name_label.Text = 'Nome do detalhe:'\r\n        self.name_label.Location = Point(10, 20)\r\n        self.name_label.Size = Size(150, 20)\r\n        self.name_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.name_label)\r\n        \r\n        self.name_textbox = TextBox()\r\n        self.name_textbox.Location = Point(160, 20)\r\n        self.name_textbox.Size = Size(200, 20)\r\n        self.Controls.Add(self.name_textbox)\r\n\r\n        self.dropdown_label = Label()\r\n        self.dropdown_label.Text = 'Duplicar como:'\r\n        self.dropdown_label.Location = Point(10, 60)\r\n        self.dropdown_label.Size = Size(150, 20)\r\n        self.dropdown_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.dropdown_label)\r\n        \r\n        self.dropdown = ComboBox()\r\n        self.dropdown.Items.AddRange(Array[str](['WithDetailing', 'Duplicate', 'AsDependent']))\r\n        self.dropdown.Location = Point(160, 60)\r\n        self.dropdown.Size = Size(200, 20)\r\n        self.Controls.Add(self.dropdown)\r\n        self.dropdown.Location = Point(160, 60)\r\n        self.dropdown.Size = Size(200, 20)\r\n        self.dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.dropdown.SelectedItem = 'Duplicate'  # Seleção padrão\r\n        self.Controls.Add(self.dropdown)\r\n        \r\n        # Adicionar DropDownList para templates de plantas de piso\r\n        self.floor_template_label = Label()\r\n        self.floor_template_label.Text = 'Template Planta de Piso:'\r\n        self.floor_template_label.Location = Point(10, 100)\r\n        self.floor_template_label.Size = Size(150, 20)\r\n        self.floor_template_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.floor_template_label)\r\n\r\n        self.floor_template_dropdown = ComboBox()\r\n        self.floor_template_dropdown.Location = Point(160, 100)\r\n        self.floor_template_dropdown.Size = Size(200, 20)\r\n        self.floor_template_dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.floor_template_dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.floor_template_dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.floor_template_dropdown)\r\n        \r\n        # Adicionar DropDownList para templates de vistas 3D\r\n        self.threeD_template_label = Label()\r\n        self.threeD_template_label.Text = 'Template Vista 3D:'\r\n        self.threeD_template_label.Location = Point(10, 140)\r\n        self.threeD_template_label.Size = Size(150, 20)\r\n        self.threeD_template_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.threeD_template_label)\r\n\r\n        self.threeD_template_dropdown = ComboBox()\r\n        self.threeD_template_dropdown.Location = Point(160, 140)\r\n        self.threeD_template_dropdown.Size = Size(200, 20)\r\n        self.threeD_template_dropdown.DropDownStyle = ComboBoxStyle.DropDownList\r\n        self.threeD_template_dropdown.BackColor = Color.FromArgb(30, 30, 30)  # Fundo mais escuro para dropdown\r\n        self.threeD_template_dropdown.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.threeD_template_dropdown)\r\n\r\n        # Restante do código...\r\n        self.checkbox_label = Label()\r\n        self.checkbox_label.Text = 'Criar Planta de Piso?:'\r\n        self.checkbox_label.Location = Point(10, 180)\r\n        self.checkbox_label.Size = Size(120, 20)\r\n        self.checkbox_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.checkbox_label)\r\n        \r\n        self.checkbox = CheckBox()\r\n        self.checkbox.Text = 'Sim'\r\n        self.checkbox.Location = Point(160, 180)\r\n        self.checkbox.Size = Size(150, 20)\r\n        self.checkbox.BackColor = Color.FromArgb(45, 45, 48)  # Mesma cor do fundo do formulário\r\n        self.checkbox.ForeColor = Color.White  # Cor do texto branca\r\n        self.checkbox.Checked = True  # Caixa marcada por padrão\r\n        self.Controls.Add(self.checkbox)\r\n        \r\n        self.checkbox3d_label = Label()\r\n        self.checkbox3d_label.Text = 'Criar Vista 3D?:'\r\n        self.checkbox3d_label.Location = Point(10, 220)\r\n        self.checkbox3d_label.Size = Size(100, 20)\r\n        self.checkbox3d_label.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.checkbox3d_label)\r\n        \r\n        self.checkbox3d = CheckBox()\r\n        self.checkbox3d.Text = 'Sim'\r\n        self.checkbox3d.Location = Point(160, 220)\r\n        self.checkbox3d.Size = Size(150, 20)\r\n        self.checkbox3d.BackColor = Color.FromArgb(45, 45, 48)  # Mesma cor do fundo do formulário\r\n        self.checkbox3d.ForeColor = Color.White  # Cor do texto branca\r\n        self.checkbox3d.Checked = True  # Caixa marcada por padrão\r\n        self.Controls.Add(self.checkbox3d)\r\n        \r\n        self.pick_button = Button()\r\n        self.pick_button.Text = 'Selecionar região'\r\n        self.pick_button.Location = Point(120, 260)\r\n        self.pick_button.Size = Size(160, 30)  # Tamanho aumentado para caber o texto\r\n        self.pick_button.BackColor = Color.Red  # Fundo vermelho do botão\r\n        self.pick_button.ForeColor = Color.White  # Cor do texto branca\r\n        self.pick_button.Click += self.pick_button_click\r\n        self.Controls.Add(self.pick_button)\r\n\r\n        self.button = Button()\r\n        self.button.Text = 'OK'\r\n        self.button.Location = Point(160, 300)\r\n        self.button.Size = Size(80, 30)  # Tamanho aumentado para caber o texto\r\n        self.button.BackColor = Color.FromArgb(51, 153, 255)  # Fundo azul do botão\r\n        self.button.ForeColor = Color.White  # Cor do texto branca\r\n        self.button.Click += self.button_click\r\n        self.Controls.Add(self.button)\r\n        \r\n        # Informação da empresa\r\n        self.company_info = Label()\r\n        self.company_info.Text = 'Versão 1.0\\nBIM Coder | Première Engenharia\\nBy: Fellipe Caetano\\nIG: @bimcoder YT: _bimcoder\\ncontato@bimcoder.net'  \r\n        self.company_info.Location = Point(10, 350)\r\n        self.company_info.Size = Size(380, 80)\r\n        self.company_info.ForeColor = Color.White  # Cor do texto branca\r\n        self.Controls.Add(self.company_info)\r\n        \r\n        # Preencher os dropdowns com os templates de vistas\r\n        self.populate_templates()\r\n    \r\n    def populate_templates(self):\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        \r\n        # Entradas - Nomes dos templates prioritários\r\n        nome_template_floor = IN[2]\r\n        nome_template_threeD = IN[3]\r\n        \r\n        floor_plan_templates, threeD_templates = get_view_templates(doc, nome_template_floor, nome_template_threeD)\r\n        \r\n        self.floor_template_dropdown.Items.AddRange(Array[str](floor_plan_templates))\r\n        \r\n        try:\r\n        \tself.floor_template_dropdown.SelectedIndex = 0\r\n        except:\r\n\t\t\tpass        \r\n                  \r\n        self.threeD_template_dropdown.Items.AddRange(Array[str](threeD_templates))\r\n        \r\n        try:\r\n        \tself.threeD_template_dropdown.SelectedIndex = 0\r\n        \t\r\n       \texcept: \r\n       \t\tpass \r\n    \r\n    def height_textbox_keypress(self, sender, event):\r\n        if not event.KeyChar.isdigit() and event.KeyChar != '\\b':\r\n            event.Handled = True\r\n    \r\n    def button_click(self, sender, event):\r\n        global detail_values\r\n        global duplicate_option\r\n        global is_floor_plan\r\n        global is_3d_view\r\n        global height_3d\r\n        global selected_elements\r\n        global selected_floor_template \r\n        global selected_3D_template\r\n        global detail_name\r\n        \r\n        detail_name = self.name_textbox.Text\r\n        detail_values = [elem.LookupParameter(parametro).AsString() for elem in selected_elements]\r\n        duplicate_option = self.dropdown.SelectedItem\r\n        is_floor_plan = self.checkbox.Checked\r\n        is_3d_view = self.checkbox3d.Checked\r\n        selected_floor_template = self.floor_template_dropdown.SelectedItem\r\n        selected_3D_template = self.threeD_template_dropdown.SelectedItem\r\n        try:\r\n            height_3d = GetTopBottomViewRange(doc.ActiveView)\r\n        except ValueError:\r\n            height_3d = None\r\n        self.Close()\r\n\r\n    def pick_button_click(self, sender, event):\r\n        self.Hide()\r\n        doc = DocumentManager.Instance.CurrentDBDocument\r\n        uidoc = DocumentManager.Instance.CurrentUIApplication.ActiveUIDocument\r\n        global selected_elements\r\n        try:\r\n            reference = uidoc.Selection.PickObject(ObjectType.Element, \"Selecione um elemento\")\r\n            selected_elements = []\r\n            missing_name_elements = []\r\n            element = doc.GetElement(reference)\r\n                \r\n            if element.Category.Id.IntegerValue == int(BuiltInCategory.OST_DetailComponents):\r\n                selected_elements.append(element)\r\n            else:\r\n                TaskDialog.Show(\"Atenção\",\"Por favor, selecione uma Região!\")           \r\n           \r\n                \r\n            self.pick_button.BackColor = Color.Green  # Mudar a cor do botão para verde\r\n            self.pick_button.Text = 'Região selecionada!' \r\n        except Exception as e:\r\n            selected_elements = []\r\n            TaskDialog.Show('Erro', str(e))\r\n        self.Show()\r\n        self.StartPosition = FormStartPosition.CenterScreen\r\n        self.BringToFront()\r\n\r\n\r\n\r\ndef GetTopBottomViewRange(view):\r\n    top = UnitUtils.ConvertFromInternalUnits(view.GetViewRange().GetOffset(PlanViewPlane.TopClipPlane),UnitTypeId.Centimeters)\r\n    \r\n    bottom = UnitUtils.ConvertFromInternalUnits(view.GetViewRange().GetOffset(PlanViewPlane.BottomClipPlane),UnitTypeId.Centimeters)\r\n    \r\n    return top, bottom\r\n    \r\ndef get_view_templates(doc, nome_template_floor, nome_template_threeD):\r\n    collector = FilteredElementCollector(doc).OfClass(View)  \r\n    # Filtrar templates de planta de piso e 3D\r\n    floor_plan_templates = [v for v in collector if v.IsTemplate and v.ViewType == ViewType.FloorPlan]\r\n    threeD_templates = [v for v in collector if v.IsTemplate and v.ViewType == ViewType.ThreeD]\r\n    \r\n    # Ordenar as listas colocando os templates com os nomes especificados na primeira posição, se existirem\r\n    floor_plan_templates_sorted = sorted(floor_plan_templates, key=lambda x: (x.Name != nome_template_floor, x.Name))\r\n    threeD_templates_sorted = sorted(threeD_templates, key=lambda x: (x.Name != nome_template_threeD, x.Name))\r\n    \r\n    return [e.Name for e in floor_plan_templates_sorted], [e.Name for e in threeD_templates_sorted]\r\n\r\n# Inicializar e executar o formulário\r\nif varios_detalhes==\"SIM\":\r\n    form = MyForm1()\r\n    Application.Run(form)  \r\n    OUT = (detail_values, duplicate_option, is_floor_plan, is_3d_view, height_3d,  selected_elements, selected_floor_template,selected_3D_template )\r\nelse:\r\n    form = MyForm2()\r\n    Application.Run(form)\r\n    \r\n    OUT = (detail_name, duplicate_option, is_floor_plan, is_3d_view, height_3d, selected_elements,selected_floor_template,selected_3D_template )\r\n\r\n\r\n",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "9aa1451e2ed04d3694e6d4c645a495b3",
       "Inputs": [
@@ -616,7 +595,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
@@ -636,7 +615,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Cria uma sequência de caracteres."
+      "Description": "Creates a string."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
@@ -729,7 +708,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Permite que o código DesignScript seja criado diretamente"
+      "Description": "Allows for DesignScript code to be authored directly"
     },
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
@@ -749,7 +728,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Cria uma sequência de caracteres."
+      "Description": "Creates a string."
     },
     {
       "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
@@ -769,14 +748,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Cria uma sequência de caracteres."
+      "Description": "Creates a string."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, View, BuiltInParameter\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Entradas do Dynamo\r\ntoggle = IN[0]\r\nviews = IN[1] if isinstance(IN[1], list) else [IN[1]]\r\nview_template_name = IN[2]\r\nview_names = IN[3] if isinstance(IN[3], list) else [IN[3]]\r\nresult = []\r\n\r\n# Documento do Revit\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\n# Função para obter o template de visualização pelo nome\r\ndef get_view_template_by_name(doc, template_name):\r\n    collector = FilteredElementCollector(doc).OfClass(View)\r\n    for view in collector:\r\n        if view.IsTemplate and view.Name == template_name:\r\n            return view\r\n    return None\r\ntest=[]\r\nif toggle:\r\n    # Obter o template de visualização\r\n    view_template = get_view_template_by_name(doc, view_template_name)\r\n    \r\n    # Iniciar transação\r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    \r\n    # Aplicar o template em cada vista\r\n    i = 0\r\n    for v in views:    \r\n        view = UnwrapElement(v)\r\n        view.ViewTemplateId = view_template.Id  \r\n        view_name = view.get_Parameter(BuiltInParameter.VIEW_NAME)\r\n        view_name.Set(view_names[i])\r\n        result.append(view)\r\n        i+=1\r\n    \r\n    # Finalizar transação\r\n    TransactionManager.Instance.TransactionTaskDone()\r\n    \r\n    # Ordenar o resultado pelo nome da vista\r\n    result.sort(key=lambda v: v.get_Parameter(BuiltInParameter.VIEW_NAME).AsString())\r\n    \r\n    # Saída\r\n    OUT = result\r\n    \r\n",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import FilteredElementCollector, View, BuiltInParameter\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\n# Entradas do Dynamo\r\ntoggle = IN[0]\r\nviews = IN[1] if isinstance(IN[1], list) else [IN[1]]\r\nview_template_name = IN[2]\r\nview_names = IN[3] if isinstance(IN[3], list) else [IN[3]]\r\nresult = []\r\n\r\n# Documento do Revit\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Função para obter o template de visualização pelo nome\r\ndef get_view_template_by_name(doc, template_name):\r\n    collector = FilteredElementCollector(doc).OfClass(View)\r\n    for view in collector:\r\n        if view.IsTemplate and view.Name == template_name:\r\n            return view\r\n    return None\r\n\r\nif toggle:\r\n    # Obter o template de visualização\r\n    view_template = get_view_template_by_name(doc, view_template_name)\r\n    \r\n    # Iniciar transação\r\n    TransactionManager.Instance.EnsureInTransaction(doc)\r\n    \r\n    # Aplicar o template em cada vista\r\n    i = 0\r\n    for v in views:    \r\n        view = UnwrapElement(v)\r\n        if view_template != None: view.ViewTemplateId = view_template.Id        \r\n        view_name = view.get_Parameter(BuiltInParameter.VIEW_NAME)\r\n        view_name.Set(view_names[i])\r\n        result.append(view)\r\n        i+=1\r\n    \r\n    # Finalizar transação\r\n    TransactionManager.Instance.TransactionTaskDone()\r\n    \r\n    # Ordenar o resultado pelo nome da vista\r\n    result.sort(key=lambda v: v.get_Parameter(BuiltInParameter.VIEW_NAME).AsString())\r\n    \r\n    # Saída \r\n    OUT = result\r\n     \r\n",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "edf63e0919804bc8bcbde2faa164c69b",
       "Inputs": [
@@ -829,14 +807,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitAPIUI\")\r\nclr.AddReference(\"RevitServices\")\r\nclr.AddReference(\"RevitNodes\")\r\n\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.UI import *\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nfrom Revit.Elements import Element\r\n\r\n# Obtém o documento ativo do Revit\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Função para categorizar vistas em 2D e 3D\r\ndef categorizar_vistas(vistas):\r\n    vistas_2d = []\r\n    vistas_3d = []\r\n\r\n    for vista in vistas:\r\n        if isinstance(vista, ViewPlan):\r\n            vistas_2d.append(vista)\r\n        elif isinstance(vista, View3D):\r\n            vistas_3d.append(vista)\r\n    \r\n    return vistas_2d, vistas_3d\r\n\r\n# Função para formatar a lista de vistas\r\ndef formatar_lista_vistas(vistas, tipo):\r\n    resultado = \"{}:\\n\".format(tipo)\r\n    for vista in vistas:\r\n        resultado += \"- {}\\n\".format(vista.Name)\r\n    return resultado\r\n\r\n# Entrada do Dynamo\r\nvistas_input = UnwrapElement(IN[0])\r\n\r\n# Categoriza as vistas\r\nvistas_2d, vistas_3d = categorizar_vistas(vistas_input)\r\n\r\n# Formata as listas de vistas\r\nlista_vistas_2d = formatar_lista_vistas(vistas_2d, \"Vistas 2D\") if vistas_2d else \"\"\r\nlista_vistas_3d = formatar_lista_vistas(vistas_3d, \"Vistas 3D\") if vistas_3d else \"\"\r\n\r\n# Concatena as listas\r\nresultado_final = \"Vistas criadas:\\n\\n\" + lista_vistas_2d + \"\\n\" + lista_vistas_3d\r\n\r\n# Exibe a mensagem para o usuário\r\nif resultado_final.strip():\r\n    TaskDialog.Show(\"Vistas Criadas\", resultado_final)\r\nelse:\r\n    TaskDialog.Show(\"Vistas Criadas\", \"Nenhuma vista foi criada.\")\r\n\r\nOUT = resultado_final\r\n",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "09957fae46ca4f7ea929bc52774f380a",
       "Inputs": [
@@ -862,7 +839,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction, DynamoCore",
@@ -874,7 +851,7 @@
         {
           "Id": "7978e4785abd4d58ae628ead7c27b892",
           "Name": "list0",
-          "Description": "Lista para unir em uma.\n\nvar[]..[]",
+          "Description": "Lists to join into one.\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -894,7 +871,7 @@
         {
           "Id": "1af59d0a7748458ea9f259f32c93eb25",
           "Name": "list",
-          "Description": "Listas unidas.",
+          "Description": "Joined list.",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -902,7 +879,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Concatena todas as listas fornecidas em uma única lista.\n\nList.Join (lists: var[]..[]): var[]..[]"
+      "Description": "Concatenates all given lists into a single list.\n\nList.Join (lists: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
@@ -922,7 +899,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Seleção entre True e False."
+      "Description": "Selection between a true and false."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -933,7 +910,7 @@
         {
           "Id": "d6234552696f46288005eee425002352",
           "Name": "item",
-          "Description": "O item para repetir.\n\nvar[]..[]",
+          "Description": "The item to repeat.\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -942,7 +919,7 @@
         {
           "Id": "4c48d9e7c9c84383af0feb7fb430940f",
           "Name": "amount",
-          "Description": "O número de vezes para repetir.\n\nint",
+          "Description": "The number of times to repeat.\n\nint",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -953,7 +930,7 @@
         {
           "Id": "3eb4fecdb9594c74a1442e7ef7d17ae4",
           "Name": "list",
-          "Description": "Lista de itens repetidos.",
+          "Description": "List of repeated items.",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -961,7 +938,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Cria uma lista que contém o determinado item no número determinado de vezes.\n\nList.OfRepeatedItem (item: var[]..[], amount: int): var[]..[]"
+      "Description": "Creates a list containing the given item the given number of times.\n\nList.OfRepeatedItem (item: var[]..[], amount: int): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -972,7 +949,7 @@
         {
           "Id": "8ca8d4ec84614230b1c71a197fdc2af9",
           "Name": "list",
-          "Description": "Lista da qual para obter a contagem de itens.\n\nvar[]..[]",
+          "Description": "List to get the item count of.\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -983,7 +960,7 @@
         {
           "Id": "9946da6351474d13a5e27d838a4f200c",
           "Name": "int",
-          "Description": "Comprimento da lista.",
+          "Description": "List length.",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -991,14 +968,13 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Retorna o número de itens armazenados na determinada lista.\n\nList.Count (list: var[]..[]): int"
+      "Description": "Returns the number of items stored in the given list.\n\nList.Count (list: var[]..[]): int"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nclr.AddReference('RevitServices')\r\nfrom Autodesk.Revit.DB import *\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nfrom Autodesk.Revit.UI import TaskDialog\r\n\r\n# Coletando o documento atual\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Função para verificar a existência do parâmetro e sua associação com a categoria\r\ndef check_parameter_and_category(parameter_name):\r\n    # Obtendo os parâmetros do projeto\r\n    parameters = doc.ParameterBindings\r\n    it = parameters.ForwardIterator()\r\n    it.Reset()\r\n    while it.MoveNext():\r\n        definition = it.Key\r\n        binding = it.Current\r\n        \r\n        if definition.Name == parameter_name:\r\n            # Verificar se a categoria associada é a especificada\r\n            if isinstance(binding, ElementBinding):\r\n                categories = binding.Categories\r\n                for cat in categories:\r\n                    if cat.Id == ElementId(BuiltInCategory.OST_DetailComponents):\r\n                        return True\r\n    return False\r\n\r\n# Verificar se o parâmetro 'p.NÚMERO.DETALHE' existe\r\nparameter_name = IN[1]\r\nparameter_exists = check_parameter_and_category(parameter_name)\r\n\r\n# Exibir TaskDialog se o parâmetro não existir\r\nif not parameter_exists:\r\n    TaskDialog.Show(\"Parâmetro Não Encontrado\", \"Necessário criar o parâmetro p.NÚMERO.DETALHE no projeto atual.\")\r\n\r\n# Saída do script\r\nOUT = parameter_exists",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "039f23d72ccd4d0cb37a697c4ce8225a",
       "Inputs": [
@@ -1033,14 +1009,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "# Importando as bibliotecas necessárias do Revit\r\nimport clr\r\nclr.AddReference('RevitServices')\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitNodes')\r\nclr.AddReference('ProtoGeometry')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nfrom Autodesk.DesignScript.Geometry import *\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Architecture import *\r\nfrom Autodesk.Revit.DB.Structure import *\r\nfrom Autodesk.Revit.DB.Mechanical import *\r\n\r\n# Obtendo o documento atual\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n# Função para obter as linhas da FilledRegion\r\ndef get_filled_region_lines(filled_region):\r\n    # Inicializando uma lista para armazenar as linhas\r\n    lines = []\r\n    \r\n    # Obtendo as bordas da FilledRegion\r\n    boundaries = filled_region.GetBoundaries()\r\n    \r\n    # Iterando sobre cada boundary\r\n    for boundary in boundaries:\r\n        # Iterando sobre cada curva no boundary\r\n        for curve in boundary:\r\n            lines.append(curve.ToProtoType())\r\n    \r\n    return lines\r\n\r\n# Verifica se a entrada é uma lista ou um único elemento\r\nif isinstance(IN[0], list):\r\n    filled_regions = [UnwrapElement(x) for x in IN[0]]\r\nelse:\r\n    filled_regions = [UnwrapElement(IN[0])]\r\n\r\n# Aplicando a função a todos os elementos na lista\r\nall_lines = []\r\nfor region in filled_regions:\r\n    lines = get_filled_region_lines(region)\r\n    all_lines.append(lines)\r\n\r\n# Saída do script\r\nOUT = all_lines if len(all_lines) > 1 else all_lines[0]\r\n",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "b93238d9a6444d0d82a68d4cbcbb8d59",
       "Inputs": [
@@ -1066,7 +1041,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -1151,7 +1126,6 @@
       "NodeType": "PythonScriptNode",
       "Code": "if IN[0]:\r\n\tOUT = IN[1]\r\nelse:\r\n\tOUT = IN[2]",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "5de8d57200fd46fb911bd47727db2de4",
       "Inputs": [
@@ -1195,7 +1169,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -1215,7 +1189,7 @@
         {
           "Id": "e0aa86b68f8940c58d408f3d7531f09e",
           "Name": "visible",
-          "Description": "bool\nValor padrão : true",
+          "Description": "bool\nDefault value : true",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -1273,14 +1247,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Retorna uma única função de várias funções. Por exemplo: as funções módulo e divisão são compostas em uma única função para aplicar a uma lista."
+      "Description": "Returns a single function from multiple functions. Ex: the modulus and divide functions are composed into a single function to apply to a list."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nclr.AddReference('RevitServices')\r\nfrom Autodesk.Revit.DB import *\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\nfrom Autodesk.Revit.UI import TaskDialog\r\n\r\n# Coletando o documento atual\r\ncheck = IN[0]\r\n\r\nif check==None:\r\n\tTaskDialog.Show(\"Aviso\",\"Necessário instalar o pacote archilab no Dynamo. Por favor, consulte o tutorial.\")\r\n\r\n# Saída do script\r\nOUT = check",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "06918f38a6a34425be9f1ee32b7ff0a7",
       "Inputs": [
@@ -1306,7 +1279,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Executa um script Python incorporado."
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Connectors": [
@@ -1618,7 +1591,7 @@
   ],
   "Author": "BIM Coder",
   "Linting": {
-    "activeLinter": "Nenhum",
+    "activeLinter": "None",
     "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
     "warningCount": 0,
     "errorCount": 0
@@ -1629,12 +1602,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": true,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.16.2.5624",
+      "Version": "2.13.1.3887",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Visualização do plano de fundo",
+      "Name": "Background Preview",
       "EyeX": -3588.015380859375,
       "EyeY": 1678.130615234375,
       "EyeZ": -432.6048583984375,
@@ -1794,8 +1767,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -742.87730957403346,
-        "Y": 437.16998369677617
+        "X": -783.59443171288137,
+        "Y": 442.98671543089728
       },
       {
         "Name": "Parâmetro",
@@ -1997,7 +1970,7 @@
         "HasNestedGroups": false,
         "Left": 137.61798681341975,
         "Top": 264.79964104609979,
-        "Width": 1092.4380799600174,
+        "Width": 1087.4380799600174,
         "Height": 545.96314427300354,
         "FontSize": 24.0,
         "InitialTop": 323.79964104609979,
@@ -2018,7 +1991,7 @@
         "HasNestedGroups": false,
         "Left": 548.79064607675491,
         "Top": 1334.903191451345,
-        "Width": 232.0,
+        "Width": 230.0,
         "Height": 221.0,
         "FontSize": 24.0,
         "InitialTop": 1393.903191451345,
@@ -2040,11 +2013,11 @@
         "HasNestedGroups": false,
         "Left": 1515.1006992992584,
         "Top": 591.71304815809583,
-        "Width": 471.42597577673928,
+        "Width": 466.42597577673928,
         "Height": 426.32377393617173,
         "FontSize": 24.0,
         "InitialTop": 650.71304815809583,
-        "InitialHeight": 262.91864597677738,
+        "InitialHeight": 315.32377393617173,
         "TextblockHeight": 49.0,
         "Background": "#FFCFCFCF"
       },
@@ -2063,7 +2036,7 @@
         "Left": 2507.3900472645105,
         "Top": 599.85740874927342,
         "Width": 598.7661949401845,
-        "Height": 295.22970993866375,
+        "Height": 225.22970993866375,
         "FontSize": 24.0,
         "InitialTop": 658.85740874927342,
         "InitialHeight": 149.22970993866375,
@@ -2085,7 +2058,7 @@
         "HasNestedGroups": false,
         "Left": 2256.9327984409947,
         "Top": 1126.8388129746197,
-        "Width": 674.55873451865682,
+        "Width": 669.55873451865682,
         "Height": 271.48188615615754,
         "FontSize": 24.0,
         "InitialTop": 1185.8388129746197,
@@ -2174,11 +2147,11 @@
         "HasNestedGroups": false,
         "Left": 197.80685972597792,
         "Top": 906.46293072436606,
-        "Width": 1031.6567452081317,
+        "Width": 1029.6567452081317,
         "Height": 390.874997509859,
         "FontSize": 24.0,
         "InitialTop": 965.46293072436606,
-        "InitialHeight": 150.85470076089007,
+        "InitialHeight": 314.874997509859,
         "TextblockHeight": 49.0,
         "Background": "#FF0DFFFF"
       },
@@ -2219,11 +2192,11 @@
         "HasNestedGroups": false,
         "Left": -2075.678245602614,
         "Top": 265.79012565708365,
-        "Width": 546.79655183556179,
+        "Width": 541.79655183556179,
         "Height": 191.0,
         "FontSize": 24.0,
         "InitialTop": 324.79012565708365,
-        "InitialHeight": 174.86021144452053,
+        "InitialHeight": 182.86021144452053,
         "TextblockHeight": 49.0,
         "Background": "#FFFF931E"
       },
@@ -2266,8 +2239,8 @@
         "Background": "#FFC1D676"
       }
     ],
-    "X": -300.54478668014895,
-    "Y": 281.12428951805333,
-    "Zoom": 0.91405430120973863
+    "X": 1135.6514335534757,
+    "Y": 59.332305622479737,
+    "Zoom": 0.85958923817473754
   }
 }
